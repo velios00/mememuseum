@@ -1,73 +1,50 @@
 import { User } from "../models/MemeMuseumDB.js";
 import crypto from "crypto";
+import Jwt from "jsonwebtoken";
 
 export class AuthenticationController {
-    static async register(req, res) {
-        const { userName, password } = req.body;
+    static async register(body) {
+        const { userName, password } = body;
         //console.log("request body:", req.body);
-        try{
-            const foundUser = await User.findOne({ where: {userName: userName}});
-           // console.log("Found user: ", foundUser);
-            if(foundUser){
-                return res.status(409).json({ message: "Username already exists" }); // Risposta per utente già esistente
-            }
-
-            // Hash della password
-            const hash = crypto.createHash("sha256");
-            const hashedPassword = hash.update(password).digest("hex");
-            //console.log("Hashed password: ", hashedPassword);
-
-            // Creazione del nuovo utente
-            const newUser = await User.create({
-                userName: userName,
-                password: hashedPassword,
-            })
-            console.log("New user created: ", newUser);
-
-            // Risposta per registrazione riuscita
-            return res.status(201).json({
-                message: "User registered successfully",
-                user: {
-                    id: newUser.id,
-                    userName: newUser.username,
-                },
-            });
-        } catch (error) {
-            console.error("Error in registration:", error); // Log dettagliato dell'errore
-            return res.status(500).json({ message: "Internal server error" }); // Risposta per errore interno
+        const foundUser = await User.findOne({ where: {userName: userName}});
+        // console.log("Found user: ", foundUser);
+        if(foundUser){
+            throw new Error("User already exists"); // L'utente esiste già
         }
+        // Creazione del nuovo utente
+        return await User.create({
+            userName: userName,
+            password: password,
+        })
     }
     
-    static async login(req, res) {
-        const { userName, password } = req.body; // Estrai i dati dal body della richiesta
-        console.log("Login request body:", req.body); // Log della richiesta di login
-        try {
-            // Verifico che l'utente esista
-            const hash = crypto.createHash("sha256");
-            const hashedPassword = hash.update(password).digest("hex");
-            console.log("Hashed Password: ", hashedPassword);
+    static async login(body) {
+        const user = new User({ userName: body.userName, password: body.password });
     
-            const foundUser = await User.findOne({ where: { userName: userName, password: hashedPassword } });
-            console.log("user in check: ", foundUser);
+        const foundUser = await User.findOne({ where: { userName: user.userName, password: user.password } });
+        console.log("user in check: ", foundUser);
     
-            if (!foundUser) {
-                return res.status(401).json({ message: "Invalid credentials" }); // Risposta per credenziali non valide
-            }
-    
-            // Risposta per login riuscito
-            return res.status(200).json({
-                message: "Login successful",
-                user: {
-                    id: foundUser.id,
-                    userName: foundUser.userName,
-                    profileImage: foundUser.profileImage,
-                },
-                
-            });
-            
-        } catch (error) {
-            console.error("Error in login:", error); // Log dettagliato dell'errore
-            return res.status(500).json({ message: "Internal server error" }); // Risposta per errore interno
+        if (!foundUser) {
+            throw new Error("Invalid username or password"); // L'utente non esiste o la password è errata
         }
+        // Risposta per login riuscito
+        return foundUser; // Restituisci l'utente trovato
+    }
+    
+    static issueToken(user) {
+        console.log("User in issueToken: ", user);
+        const createdToken = Jwt.sign(
+            {
+                user: {
+                    id: user.id,
+                    userName: user.userName,
+                },
+            },
+            process.env.TOKEN_SECRET,
+            {
+                expiresIn: "1h",
+            }
+        );
+        return { token: createdToken };
     }
 } 

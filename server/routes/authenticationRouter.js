@@ -3,6 +3,28 @@ import { AuthenticationController } from '../controllers/authenticationControlle
 
 export const authenticationRouter = express.Router();
 
-authenticationRouter.post('/register', AuthenticationController.register);
+authenticationRouter.post('/register', (req, res, next) => {
+    AuthenticationController.register(req.body)
+        .then((userFound) => {
+            console.log("User found: ", userFound);
+            if(userFound){
+                res.json(AuthenticationController.issueToken(userFound));
+            }
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
 
-authenticationRouter.post('/login', AuthenticationController.login);
+authenticationRouter.post('/login', (req, res, next) => {
+    AuthenticationController.login(req.body)
+        .then((userFound) => {
+            console.log("User found: ", userFound);
+            if(userFound){
+                res.json(AuthenticationController.issueToken(userFound));
+            }
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
