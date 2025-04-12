@@ -1,5 +1,4 @@
 import { User } from "../models/MemeMuseumDB.js";
-import crypto from "crypto";
 import Jwt from "jsonwebtoken";
 
 export class AuthenticationController {
