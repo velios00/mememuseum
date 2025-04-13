@@ -1,5 +1,6 @@
 import express from 'express';
 import { MemeController } from '../controllers/memeController.js';
+import { memeExists } from '../middleware/memeExists.js';
 import multer from 'multer';
 
 const upload = multer({ dest: 'uploads/' });
@@ -29,5 +30,12 @@ memeRouter.get('/memes/:id', (req, res, next) => {
         });
 });
 
-
-
+memeRouter.delete('/memes/:id', memeExists, (req, res, next) => {
+    MemeController.deleteMeme(req.params.id)
+        .then((item) => {
+            res.json(item);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});

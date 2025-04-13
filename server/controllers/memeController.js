@@ -7,15 +7,25 @@ export class MemeController {
         const imagePath = file ? file.path : null;
         console.log("pippo", body)
         let meme = Meme.build({
-            title: null,
+            title: body.title,
             image: imagePath + ".jpg",
             tags: body.tags ? body.tags.split(',') : [],
-            userId: body.userId
+            userId: body.userId,
         });
         return meme.save();
     }
 
     static async findById(memeId){
         return Meme.findByPk(memeId);
+    }
+
+    static async deleteMeme(memeId) {
+        console.log("memeid: ", memeId);
+        const meme = await Meme.findByPk(memeId);
+        if(!meme)
+            throw new Error("Meme not found");
+        const imagePath = meme.image;
+        await Meme.destroy({ where: { id: memeId } });
+        return meme;
     }
 }

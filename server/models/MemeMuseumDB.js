@@ -57,6 +57,8 @@ Meme.User = Meme.belongsTo(User, {
     foreignKey: {name: "userId", allowNull: false},
 });
 
+
+
 //Vedere come collegare tag
 
 Meme.Comments = Meme.hasMany(Comment, {

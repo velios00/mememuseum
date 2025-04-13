@@ -15,5 +15,14 @@ export function createModel(database) {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        uploadDate: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+        },
     })
 }
