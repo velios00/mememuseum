@@ -14,7 +14,8 @@ export class CommentController {
     }
 
     static async deleteComment(commentId) {
-        const comment = await Comment.findById(commentId);
+        const comment = await Comment.findByPk(commentId);
+        console.log("comment", comment);
         if (!comment)
              throw new Error("Comment not found");
         return comment.destroy({ where: { id: commentId } });
