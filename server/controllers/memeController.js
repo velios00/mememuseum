@@ -1,6 +1,5 @@
-import { User, Meme, Tag } from "../models/MemeMuseumDB.js";
-import fs from "fs";
-import path from "path";
+import { Meme } from "../models/MemeMuseumDB.js";
+
 
 export class MemeController {
     static async createMeme(body, file) {
