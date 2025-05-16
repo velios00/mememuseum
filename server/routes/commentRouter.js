@@ -4,7 +4,18 @@ import { memeExists } from '../middleware/memeExists.js';
 
 export const commentRouter = express.Router();
 
-commentRouter.post('/memes/:memeId/comments', memeExists, (req, res, next) => {
+
+commentRouter.get(`/:memeId/comments`, memeExists, (req, res, next) => {
+    CommentController.getAllComments(req.params.memeId)
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+commentRouter.post('/:memeId/comments', memeExists, (req, res, next) => {
     CommentController.createComment(req.params.memeId, req.body)
         .then((result) => {
             res.json(result);
@@ -14,7 +25,7 @@ commentRouter.post('/memes/:memeId/comments', memeExists, (req, res, next) => {
         });
 });
 
-commentRouter.delete('/memes/:memeId/comments/:commentId', memeExists, (req, res, next) => {
+commentRouter.delete('/:memeId/comments/:commentId', memeExists, (req, res, next) => {
     CommentController.deleteComment(req.params.commentId)
         .then((result) => {
             res.json(result);

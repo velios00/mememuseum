@@ -44,6 +44,16 @@ export class AuthenticationController {
                 expiresIn: "1h",
             }
         );
-        return { token: createdToken };
+        return { 
+            token: createdToken,
+            user: {
+                id: user.id,
+                userName: user.userName,
+            },
+         };
+    }
+
+    static isTokenValid(token, callback) {
+        Jwt.verify(token, process.env.TOKEN_SECRET, callback)
     }
 } 

@@ -7,7 +7,7 @@ const upload = multer({ dest: 'uploads/' });
 
 export const memeRouter = express.Router();
 
-memeRouter.post('/memes', upload.single('image'), (req, res, next) => {
+memeRouter.post('/upload', upload.single('image'), (req, res, next) => {
     console.log("Request body: ", req);
     const body = JSON.parse(JSON.stringify(req.body));
     console.log("Parsed body: ", body);

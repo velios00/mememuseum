@@ -12,3 +12,13 @@ userRouter.get('/user/:id', (req, res, next) => {
             next(err);
         });
 });
+
+userRouter.get(`/user/:id/memes`, (req, res, next) => {
+    UserController.findMemesByUserId(req.params.id)
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});

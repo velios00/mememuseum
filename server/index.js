@@ -18,7 +18,12 @@ app.use(authenticationRouter);
 app.use(memeRouter);
 app.use(userRouter);
 app.use(voteRouter);
-app.use(commentRouter);
+app.use("/memes", commentRouter);
+app.use('/uploads', (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // oppure "http://localhost:5173"
+  next();
+}, express.static('uploads'));
+
 
 app.use((err, req, res, next) => {
     console.log(err.stack); //se non è presente stack, stamperà undefined

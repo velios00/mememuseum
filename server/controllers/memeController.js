@@ -1,14 +1,21 @@
 import { Meme } from "../models/MemeMuseumDB.js";
-
+import path from "path";
+import fs from "fs";
 
 export class MemeController {
     static async createMeme(body, file) {
-        const imagePath = file ? file.path : null;
+        const extension = path.extname(file.originalname);
+        const newFilename = file.filename + extension;
+        const newPath = path.join(file.destination, newFilename);
+
+        fs.renameSync(file.path, newPath);
+
+        const imagePath = `uploads/${newFilename}`;
         console.log("pippo", body)
         let meme = Meme.build({
             title: body.title,
-            image: imagePath + ".jpg",
-            tags: body.tags ? body.tags.split(',') : [],
+            image: imagePath,
+            tag: body.tag ? body.tag.split(',') : [],
             userId: body.userId,
         });
         return meme.save();

@@ -22,7 +22,7 @@ export const { User, Meme, Tag, Vote, Comment} = database.models;
 
 // Definizione delle relazioni tra i modelli
 User.Memes = User.hasMany(Meme, {
-    foreignKey: {name: "userId", allowNull: false},
+    as: 'memes', foreignKey: {name: "userId", allowNull: false},
 });
 
 Meme.User = Meme.belongsTo(User, {
@@ -48,6 +48,10 @@ User.Votes = User.hasMany(Vote, {
 Vote.User = Vote.belongsTo(User, {
     foreignKey: {name: "userId", allowNull: false},
 });
+
+Vote.Meme = Vote.belongsTo(Meme, {
+    foreignKey: {name: "memeId", allowNull: false},
+})
 
 Meme.Votes = Meme.hasMany(Vote, {
     foreignKey: {name: "memeId", allowNull: false},
