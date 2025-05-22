@@ -1,6 +1,10 @@
-import { Meme } from "../models/MemeMuseumDB.js";
+import { Meme, Tag, User } from "../models/MemeMuseumDB.js";
 import path from "path";
 import fs from "fs";
+import Sequelize from "sequelize";
+
+let currentDailyMeme = null;
+let lastUpdate = null;
 
 export class MemeController {
     static async createMeme(body, file) {
@@ -11,14 +15,29 @@ export class MemeController {
         fs.renameSync(file.path, newPath);
 
         const imagePath = `uploads/${newFilename}`;
-        console.log("pippo", body)
+
+        const tagList = body.tag ? body.tag.split(',').map(tag => tag.trim()) : [];
+
+        //1. Crea meme
         let meme = Meme.build({
             title: body.title,
             image: imagePath,
-            tag: body.tag ? body.tag.split(',') : [],
+            //tag: body.tag ? body.tag.split(',') : [],
             userId: body.userId,
         });
-        return meme.save();
+        //2/ Salva meme
+        await meme.save();
+
+        //3. Associa i tag(trova o crea)
+        if(tagList.length > 0) {
+            const tagInstances = [];
+            for(const tagName of tagList) {
+                const [tag] = await Tag.findOrCreate({ where: {tagName } })
+                tagInstances.push(tag);
+            }
+                await meme.addTags(tagInstances);
+            }
+            return meme;
     }
 
     static async findById(memeId){
@@ -33,5 +52,73 @@ export class MemeController {
         const imagePath = meme.image;
         await Meme.destroy({ where: { id: memeId } });
         return meme;
+    }
+
+    static async getFilteredMemes(query) {
+        const filter = query.filter || "new";
+        const page = parseInt(query.page) || 1;
+        const limit = parseInt(query.limit) || 7;
+        const offset = (page - 1) * limit;
+        console.log("query: ", query);
+
+        let orderByVotes;
+
+        if (filter === "top"){
+            //piu' piaciuti: upvotes - downvotes decrescente
+            orderByVotes = Sequelize.literal(`(SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) - (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) DESC`);
+        } else if (filter ==="down"){
+            //meno piaciuti: upvotes - downvotes crescente
+            orderByVotes = Sequelize.literal(`(SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) - (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) ASC`);
+        } else if(filter ==="new") {
+            orderByVotes = [['createdAt', 'DESC']];
+        } else if(filter ==="old") {
+            orderByVotes = [['createdAt', 'ASC']];
+        }
+
+        const memes = await Meme.findAll({
+            limit,
+            offset,
+            order: [orderByVotes],
+            include: [
+                {
+                    model: Tag,
+                    attributes: ["tagName"],
+                    through: {
+                        attributes: []  //evita info extra dalla tabella ponte
+                    }
+                },
+                {
+                    model: User,
+                    attributes: ["userName", "profileImage"],
+                }
+            ]
+        })
+        return memes.map(meme => ({
+            id: meme.id,
+            title: meme.title,
+            image: meme.image,
+            tags: meme.Tags.map(tag => tag.tagName),
+            User: {
+                userName: meme.User?.userName,
+                profileImage: meme.User?.profileImage,
+            }
+        }));
+    }
+
+
+    static async getMemeOfTheDay() {
+        const now = new Date();
+        const shouldUpdate = !lastUpdate || now - lastUpdate > 24 * 60 * 60 * 1000;
+        
+        if(shouldUpdate) {
+            const memes = await Meme.findAll();
+            const randomIndex = Math.floor(Math.random() * memes.length);
+            currentDailyMeme = memes[randomIndex];
+            lastUpdate = now;
+        }
+
+        return Meme.findByPk(currentDailyMeme.id, {
+            include: ['Tags'],
+        });
     }
 }

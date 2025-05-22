@@ -61,6 +61,15 @@ Meme.User = Meme.belongsTo(User, {
     foreignKey: {name: "userId", allowNull: false},
 });
 
+Meme.Tags = Meme.belongsToMany(Tag, {
+    through: "MemeTags",
+    foreignKey: "memeId",
+});
+
+Tag.Memes = Tag.belongsToMany(Meme, {
+    through: "MemeTags",
+    foreignKey: "tagId",
+});
 
 
 //Vedere come collegare tag

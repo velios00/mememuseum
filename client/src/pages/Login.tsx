@@ -27,7 +27,7 @@ export default function Login() {
       localStorage.setItem("token", token); //salva il token nel local storage
       localStorage.setItem("userId", user.id); //salva l'ID utente nel local storage
 
-      alert("Registrazione avvenuta con successo!");
+      alert("Login avvenuto con successo!");
       navigate("/");
     } catch (err) {
       console.error(err);

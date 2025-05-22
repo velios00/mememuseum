@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -17,31 +17,34 @@ export default function UploadMeme() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
 
-    if (!image) {
-      return alert("Seleziona un'immagine da caricare");
-    }
+      if (!image) {
+        return alert("Seleziona un'immagine da caricare");
+      }
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("tag", tag);
-    formData.append("userId", localStorage.getItem("userId") || "");
-    formData.append("image", image);
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("tag", tag);
+      formData.append("userId", localStorage.getItem("userId") || "");
+      formData.append("image", image);
 
-    try {
-      await axios.post("http://localhost:3000/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      navigate("/");
-    } catch (err) {
-      console.error("Errore durante il caricamento del meme:", err);
-    }
-  };
+      try {
+        await axios.post("http://localhost:3000/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        navigate("/");
+      } catch (err) {
+        console.error("Errore durante il caricamento del meme:", err);
+      }
+    },
+    [title, tag, image, navigate]
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">

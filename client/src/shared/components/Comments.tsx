@@ -7,19 +7,11 @@ import {
   Box,
   Avatar,
 } from "@mui/material";
+import { Comment } from "../models/Comment.model";
 import axios from "axios";
 
 interface CommentsProps {
   memeId: number;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  User: {
-    id: number;
-    username: string;
-  };
 }
 
 export default function Comments({ memeId }: CommentsProps) {
@@ -58,7 +50,7 @@ export default function Comments({ memeId }: CommentsProps) {
   useEffect(() => {
     fetchComments();
   }, [memeId]);
-
+  console.log(comments);
   return (
     <Box mt={2}>
       <Stack spacing={2}>
@@ -66,10 +58,19 @@ export default function Comments({ memeId }: CommentsProps) {
           size="small"
           label="Inserisci un commento..."
           fullWidth
+          sx={{
+            backgroundColor: "#1e2936",
+            color: "white",
+            fontWeight: "bold",
+          }}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
         />
-        <Button variant="contained" onClick={handleCommentSubmit}>
+        <Button
+          variant="contained"
+          sx={{ fontWeight: "bold" }}
+          onClick={handleCommentSubmit}
+        >
           Invia
         </Button>
 
@@ -79,14 +80,20 @@ export default function Comments({ memeId }: CommentsProps) {
               key={comment.id}
               mt={1}
               p={1}
-              borderBottom={"1px solid #ccc"}
+              borderBottom={"1px solid #798fa6"}
               textAlign={"left"}
             >
-              <Avatar></Avatar>
-              <Typography variant="body2" fontWeight="bold">
+              <Avatar sx={{ mb: 1 }}></Avatar>
+              <Typography
+                variant="body1"
+                fontWeight="bold"
+                sx={{ color: "white", fontSize: 18 }}
+              >
                 {comment.User.username}
               </Typography>
-              <Typography variant="body2">{comment.content}</Typography>
+              <Typography variant="body1" sx={{ color: "white", fontSize: 18 }}>
+                {comment.content}
+              </Typography>
             </Box>
           ))}
         </Box>

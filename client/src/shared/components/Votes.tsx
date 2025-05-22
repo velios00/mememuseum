@@ -12,7 +12,7 @@ export default function Votes({ memeId }: voteControlProps) {
   const [vote, setVote] = useState<1 | -1 | 0>(0);
   const [voteCount, setVoteCount] = useState(0);
   const [voteId, setVoteId] = useState<number | null>(null); // serve per put e delete
-  const [userVote, setUserVote] = useState(null);
+  //const [userVote, setUserVote] = useState(null);
 
   const userId = localStorage.getItem("userId");
 
@@ -80,11 +80,13 @@ export default function Votes({ memeId }: voteControlProps) {
   return (
     <Stack direction="row" alignItems="center" spacing={1} mt={2}>
       <IconButton onClick={() => handleVote(1)}>
-        <ThumbsUpIcon color="primary" />
+        <ThumbsUpIcon sx={{ color: "white" }} />
       </IconButton>
-      <Typography variant="body1">{voteCount}</Typography>
+      <Typography variant="body1" sx={{ color: "white" }}>
+        {voteCount}
+      </Typography>
       <IconButton onClick={() => handleVote(-1)}>
-        <ThumbsDownIcon color="error" />
+        <ThumbsDownIcon sx={{ color: "white" }} />
       </IconButton>
     </Stack>
   );
