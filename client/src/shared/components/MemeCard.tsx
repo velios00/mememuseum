@@ -7,20 +7,24 @@ import {
   Chip,
   Stack,
   Avatar,
+  IconButton,
 } from "@mui/material";
 import Votes from "./Votes";
 import Comments from "./Comments";
 import { Meme } from "../models/Meme.model";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { MemeDialog } from "../models/MemeDialog.model";
 
 export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
-  console.log("MemeCard", props.meme);
+  if (!props.meme) return null;
+
   return (
     <Card
       className="mb-4"
       sx={{
         width: `100%`,
         maxWidth: 600,
-        border: "2px solid black",
+        border: "1px solid black",
         borderColor: "#798fa6",
         borderRadius: "8px",
         backgroundColor: "#151d26",
@@ -33,11 +37,11 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             alt={props.meme.User?.userName}
           />
         }
-        titleTypographyProps={{
-          fontSize: 22,
+        slotProps={{
+          title: { color: "white", fontSize: 22, fontWeight: "semibold" },
         }}
         title={props.meme.User?.userName}
-        sx={{ pb: 2, color: "white", fontSize: 30 }}
+        sx={{ pb: 2, color: "white" }}
       />
       <CardMedia
         component={"img"}
@@ -67,8 +71,14 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             ))}
           </Stack>
         )}
-        <Votes memeId={props.meme.id} />
-        <Comments memeId={props.meme.id} />
+        <Votes memeId={props.meme.id} votes={props.meme.votes} />
+        <IconButton onClick={() => handleOpenModal(props.meme)}>
+          <ChatBubbleOutlineIcon sx={{ color: "white" }} />
+          <Typography variant="body2" sx={{ color: "white", ml: 0.5 }}>
+            {props.meme.comments.lenght}
+          </Typography>
+        </IconButton>
+        {/* <Comments memeId={props.meme.id} comments={props.meme.comments} /> */}
       </CardContent>
     </Card>
   );

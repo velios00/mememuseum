@@ -10,47 +10,31 @@ import {
 import { Comment } from "../models/Comment.model";
 import axios from "axios";
 
-interface CommentsProps {
+export default function Comments(props: {
   memeId: number;
-}
-
-export default function Comments({ memeId }: CommentsProps) {
-  const [comments, setComments] = useState<Comment[]>([]);
+  comments: Comment[];
+}) {
+  const [comments, setComments] = useState<Comment[]>(props.comments || []);
   const [newComment, setNewComment] = useState("");
 
   const userId = localStorage.getItem("userId");
 
-  const fetchComments = async () => {
-    try {
-      const res = await axios.get(
-        `http://localhost:3000/memes/${memeId}/comments`
-      );
-      setComments(res.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-
   const handleCommentSubmit = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:3000/memes/${memeId}/comments`,
+        `http://localhost:3000/memes/${props.memeId}/comments`,
         {
           userId: userId,
           content: newComment,
         }
       );
       setNewComment("");
-      fetchComments();
+      setComments((prev) => [...prev, res.data]);
     } catch (error) {
       console.error("Error posting comment:", error);
     }
   };
 
-  useEffect(() => {
-    fetchComments();
-  }, [memeId]);
-  console.log(comments);
   return (
     <Box mt={2}>
       <Stack spacing={2}>
@@ -83,17 +67,31 @@ export default function Comments({ memeId }: CommentsProps) {
               borderBottom={"1px solid #798fa6"}
               textAlign={"left"}
             >
-              <Avatar sx={{ mb: 1 }}></Avatar>
-              <Typography
-                variant="body1"
-                fontWeight="bold"
-                sx={{ color: "white", fontSize: 18 }}
-              >
-                {comment.User.username}
-              </Typography>
-              <Typography variant="body1" sx={{ color: "white", fontSize: 18 }}>
-                {comment.content}
-              </Typography>
+              <Stack direction="row" alignItems="flex-start" spacing={2}>
+                <Avatar sx={{ mt: 0.5 }} />
+                <Box sx={{ maxWidth: "100%" }}>
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    sx={{ color: "white", fontSize: 18 }}
+                  >
+                    {comment.User?.userName}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    fontWeight="normal"
+                    sx={{
+                      color: "white",
+                      fontSize: 16,
+                      wordWrap: "break-word",
+                      overflowWrap: "break-word",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {comment.content}
+                  </Typography>
+                </Box>
+              </Stack>
             </Box>
           ))}
         </Box>

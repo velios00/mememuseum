@@ -24,6 +24,15 @@ export default function Homepage() {
     fetchMemes();
   }, [fetchMemes, filter, page]);
 
+  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
+
+  const handleOpenModal = (meme: Meme) => {
+    setSelectedMeme(meme);
+  };
+  const handleCloseModal = () => {
+    setSelectedMeme(null);
+  };
+
   return (
     <>
       <Box p={3}>
@@ -54,7 +63,12 @@ export default function Homepage() {
           gap={3}
         >
           {memes.map((meme, index) => (
-            <MemeCard meme={meme} key={meme.id} memeIndex={index} />
+            <MemeCard
+              meme={meme}
+              key={meme.id}
+              memeIndex={index}
+              onCommentClick={() => handleOpenModal(meme)}
+            />
           ))}
         </Box>
 

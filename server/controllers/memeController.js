@@ -1,4 +1,4 @@
-import { Meme, Tag, User } from "../models/MemeMuseumDB.js";
+import { Comment, Meme, Tag, User, Vote } from "../models/MemeMuseumDB.js";
 import path from "path";
 import fs from "fs";
 import Sequelize from "sequelize";
@@ -90,6 +90,17 @@ export class MemeController {
                 {
                     model: User,
                     attributes: ["userName", "profileImage"],
+                },
+                {
+                    model: Comment,
+                    include: {
+                        model: User,
+                        attributes: ["userName", "profileImage"],
+                    },
+                },
+                {
+                    model: Vote,
+                    attributes: ["id", "value", "userId", "createdAt"],
                 }
             ]
         })
@@ -101,7 +112,25 @@ export class MemeController {
             User: {
                 userName: meme.User?.userName,
                 profileImage: meme.User?.profileImage,
-            }
+            },
+            comments:
+                meme.Comments?.map((comment) => ({
+                    id: comment.id,
+                    content: comment.content,
+                    userId: comment.userId,
+                    createdAt: comment.createdAt,
+                    User: {
+                        userName: comment.User?.userName,
+                        profileImage: comment.User?.profileImage,
+                    },
+                })) || [],
+            votes:
+                meme.Votes?.map((vote) => ({
+                    id: vote.id,
+                    value: vote.value,
+                    userId: vote.userId,
+                    createdAt: vote.createdAt,
+                })) || [],
         }));
     }
 

@@ -11,7 +11,7 @@ export interface Meme {
     upvotes: number;
     downvotes: number;
     User: User;
-    Comments: Comment[];
-    Votes: Vote[]
+    comments: Comment[];
+    votes: Vote[]
     tags: Tag[]
 }

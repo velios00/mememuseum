@@ -3,6 +3,7 @@ import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -27,9 +28,10 @@ export default function Login() {
       localStorage.setItem("token", token); //salva il token nel local storage
       localStorage.setItem("userId", user.id); //salva l'ID utente nel local storage
 
-      alert("Login avvenuto con successo!");
+      toast.success("Login effettuato con successo!"); //mostra un messaggio di successo
       navigate("/");
     } catch (err) {
+      toast.error("Login fallito! Ricontrolla le credenziali.");
       console.error(err);
       setError(
         err.response?.data?.message || "Errore durante la registrazione"

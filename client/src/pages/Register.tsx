@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -23,9 +24,10 @@ export default function Register() {
 
       localStorage.setItem("token", token); //salva il token nel local storage
 
-      alert("Registrazione avvenuta con successo!");
+      toast.success("Registrazione effettuata con successo!");
       navigate("/login");
     } catch (err) {
+      toast.error("Registrazione fallita!");
       console.error(err);
       setError(
         err.response?.data?.message || "Errore durante la registrazione"
