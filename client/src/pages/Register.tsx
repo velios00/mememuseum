@@ -1,44 +1,81 @@
-import React, { useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import toast from "react-hot-toast";
+import { RegisterData } from "../shared/models/RegisterData.model";
+import { AuthRequest } from "../shared/models/AuthRequest.model";
+import { register } from "../services/AuthService";
 
 export default function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); //impedisce il comportamento predefinito del form
-    setError(""); //azzera l'errore precedente
+  const [registerData, setRegisterData] = useState<RegisterData>({
+    usr: {
+      value: "",
+      validateCriteria: (value: string) => {
+        if (value.length < 3) return "Username troppo corto";
+        return "";
+      },
+    },
+    pwd: {
+      value: "",
+      validateCriteria: (value: string) => {
+        if (value.length < 4) return "Password troppo corta";
+        return "";
+      },
+    },
+  });
 
-    try {
-      const response = await axios.post("http://localhost:3000/register", {
-        userName: username,
-        password: password,
+  const handleSubmit = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault();
+
+      const authRequest: AuthRequest = {
+        usr: registerData.usr.value,
+        pwd: registerData.pwd.value,
+      };
+      register(authRequest).then(() => {
+        toast.success("Registrazione effettuata con successo!");
+        navigate("/login");
       });
-
-      const { token } = response.data; //estrai il token dalla risposta
-
-      localStorage.setItem("token", token); //salva il token nel local storage
-
-      toast.success("Registrazione effettuata con successo!");
-      navigate("/login");
-    } catch (err) {
-      toast.error("Registrazione fallita!");
-      console.error(err);
-      setError(
-        err.response?.data?.message || "Errore durante la registrazione"
-      );
-    }
-  };
+    },
+    [registerData]
+  );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <Paper elevation={3} className="w-full max-w-md p-8 rounded-2x1">
-        <Typography variant="h5" component="h1" align="center" gutterBottom>
+    <div className="min-h-screen flex items-center justify-center bg-#151d26 px-4">
+      <Paper
+        elevation={3}
+        className="w-full max-w-md p-8 rounded-2x1"
+        sx={{ backgroundColor: "#1e2936" }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            mb: 2,
+          }}
+        >
+          <ArrowBackIosIcon
+            onClick={() => navigate("/")}
+            sx={{
+              cursor: "pointer",
+              transition: "transform 0.2s",
+              "&:hover": {
+                transform: "scale(1.2)",
+              },
+            }}
+          />
+        </Box>
+        <Typography
+          variant="h5"
+          component="h1"
+          align="center"
+          color="white"
+          gutterBottom
+        >
           Crea account
         </Typography>
         <Box
@@ -51,17 +88,38 @@ export default function Register() {
           <TextField
             label="Username"
             variant="outlined"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            InputLabelProps={{
+              style: { color: "white" },
+            }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+            value={registerData.usr.value}
+            onChange={(e) =>
+              setRegisterData((prev) => ({
+                ...prev,
+                usr: { ...prev.usr, value: e.target.value },
+              }))
+            }
           />
           <TextField
             label="Password"
             variant="outlined"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            InputLabelProps={{
+              style: { color: "white" },
+            }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+            value={registerData.pwd.value}
+            onChange={(e) =>
+              setRegisterData((prev) => ({
+                ...prev,
+                pwd: { ...prev.pwd, value: e.target.value },
+              }))
+            }
           />
-          {error && <Typography color="error">{error}</Typography>}
           <Button variant="contained" color="primary" fullWidth type="submit">
             Registrati
           </Button>

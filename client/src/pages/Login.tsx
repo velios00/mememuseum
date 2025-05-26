@@ -1,48 +1,89 @@
-import React from "react";
+import { FormEvent, useCallback } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import toast from "react-hot-toast";
+import { AuthRequest } from "../shared/models/AuthRequest.model";
+import { login } from "../services/AuthService";
+import { LoginData } from "../shared/models/LoginData.model";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); //impedisce il comportamento predefinito del form
-    setError(""); //azzera l'errore precedente
+  const [loginData, setLoginData] = useState<LoginData>({
+    usr: {
+      value: "",
+      validateCriteria: (value: string) => {
+        if (value.length < 3) return "Username troppo corto";
+        if (value.length > 20) return "Username troppo lungo";
+        return "";
+      },
+    },
+    pwd: {
+      value: "",
+      validateCriteria: (value: string) => {
+        if (value.length < 4) return "Password troppo corta";
+        return "";
+      },
+    },
+  });
 
-    try {
-      const response = await axios.post("http://localhost:3000/login", {
-        userName: username,
-        password: password,
-      });
+  const handleSubmit = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault();
 
-      console.log(response.data); //stampa la risposta del server
-
-      const { token, user } = response.data; //estrai il token dalla risposta
-
-      localStorage.setItem("token", token); //salva il token nel local storage
-      localStorage.setItem("userId", user.id); //salva l'ID utente nel local storage
-
-      toast.success("Login effettuato con successo!"); //mostra un messaggio di successo
-      navigate("/");
-    } catch (err) {
-      toast.error("Login fallito! Ricontrolla le credenziali.");
-      console.error(err);
-      setError(
-        err.response?.data?.message || "Errore durante la registrazione"
-      );
-    }
-  };
+      const authRequest: AuthRequest = {
+        usr: loginData.usr.value,
+        pwd: loginData.pwd.value,
+      };
+      login(authRequest)
+        .then((response) => {
+          localStorage.setItem("token", response.data.token);
+          window.dispatchEvent(new Event("storage"));
+          toast.success("Login effettuato con successo!");
+          navigate("/");
+        })
+        .catch((error) => {
+          console.error("Errore durante il login:", error);
+          toast.error("Login fallito! Ricontrolla le credenziali.");
+        });
+    },
+    [loginData]
+  );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <Paper elevation={3} className="w-full max-w-md p-8 rounded-2x1">
-        <Typography variant="h5" component="h1" align="center" gutterBottom>
+    <div className="min-h-screen flex items-center justify-center bg#151d26 px-4">
+      <Paper
+        elevation={3}
+        className="w-full max-w-md p-8 rounded-2x1"
+        sx={{ backgroundColor: "#1e2936" }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            mb: 2,
+          }}
+        >
+          <ArrowBackIosIcon
+            onClick={() => navigate("/")}
+            sx={{
+              cursor: "pointer",
+              transition: "transform 0.2s",
+              "&:hover": {
+                transform: "scale(1.2)",
+              },
+            }}
+          />
+        </Box>
+        <Typography
+          variant="h5"
+          component="h1"
+          align="center"
+          color="white"
+          gutterBottom
+        >
           Accedi
         </Typography>
         <Box
@@ -55,20 +96,52 @@ export default function Login() {
           <TextField
             label="Username"
             variant="outlined"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            InputLabelProps={{
+              style: { color: "white" },
+            }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+            value={loginData.usr.value}
+            onChange={(e) =>
+              setLoginData((prev) => ({
+                ...prev,
+                usr: { ...prev.usr, value: e.target.value },
+              }))
+            }
           />
           <TextField
             label="Password"
             variant="outlined"
+            InputLabelProps={{
+              style: { color: "white" },
+            }}
+            InputProps={{
+              style: { color: "white" },
+            }}
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={loginData.pwd.value}
+            onChange={(e) =>
+              setLoginData((prev) => ({
+                ...prev,
+                pwd: { ...prev.pwd, value: e.target.value },
+              }))
+            }
           />
           <Button variant="contained" color="primary" fullWidth type="submit">
             Accedi
           </Button>
         </Box>
+        <Typography
+          variant="body2"
+          align="center"
+          className="mt-6 text-gray-600"
+        >
+          Non hai un account?
+          <a href="/register" className="text-blue-500 hover:underline">
+            Registrati
+          </a>
+        </Typography>
       </Paper>
     </div>
   );

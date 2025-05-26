@@ -59,6 +59,11 @@ export class MemeController {
         const page = parseInt(query.page) || 1;
         const limit = parseInt(query.limit) || 7;
         const offset = (page - 1) * limit;
+        const userId = query.userId ? parseInt(query.userId) : null;
+        const whereClause = {};
+        if(userId) {
+            whereClause.userId = userId;
+        }
         console.log("query: ", query);
 
         let orderByVotes;
@@ -76,6 +81,7 @@ export class MemeController {
         }
 
         const memes = await Meme.findAll({
+            where: whereClause,
             limit,
             offset,
             order: [orderByVotes],

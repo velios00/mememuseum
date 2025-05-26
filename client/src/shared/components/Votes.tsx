@@ -58,7 +58,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
   };
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1} mt={2}>
+    <>
       <IconButton onClick={() => handleVote(1)}>
         <ThumbsUpIcon sx={{ color: "white" }} />
       </IconButton>
@@ -68,6 +68,6 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
       <IconButton onClick={() => handleVote(-1)}>
         <ThumbsDownIcon sx={{ color: "white" }} />
       </IconButton>
-    </Stack>
+    </>
   );
 }

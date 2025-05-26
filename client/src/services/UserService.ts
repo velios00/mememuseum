@@ -9,5 +9,5 @@ export function getUserData(id: number): Promise<AxiosResponse<User>> {
 }
 
 export function getUserMemes(userId: number): Promise<AxiosResponse<Meme[]>> {
-    return API.get(`http://localhost:3000/user/${userId}/memes`);
+    return API.get(`http://localhost:3000/memes?userId=${userId}&filter=new`);
 }

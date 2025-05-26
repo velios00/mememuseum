@@ -5,11 +5,8 @@ export const authenticationRouter = express.Router();
 
 authenticationRouter.post('/register', (req, res, next) => {
     AuthenticationController.register(req.body)
-        .then((userFound) => {
-            console.log("User found: ", userFound);
-            if(userFound){
-                res.json(AuthenticationController.issueToken(userFound));
-            }
+        .then((user) => {
+            res.json(user);
         })
         .catch((err) => {
             next(err);

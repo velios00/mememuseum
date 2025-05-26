@@ -24,14 +24,11 @@ export default function Homepage() {
     fetchMemes();
   }, [fetchMemes, filter, page]);
 
-  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
+  //const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
 
-  const handleOpenModal = (meme: Meme) => {
-    setSelectedMeme(meme);
-  };
-  const handleCloseModal = () => {
-    setSelectedMeme(null);
-  };
+  // const handleOpenModal = (meme: Meme) => {
+  //   setSelectedMeme(meme);
+  // };
 
   return (
     <>
@@ -67,7 +64,7 @@ export default function Homepage() {
               meme={meme}
               key={meme.id}
               memeIndex={index}
-              onCommentClick={() => handleOpenModal(meme)}
+              // onCommentClick={() => handleOpenModal(meme)}
             />
           ))}
         </Box>

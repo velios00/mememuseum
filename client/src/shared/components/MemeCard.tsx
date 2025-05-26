@@ -10,13 +10,29 @@ import {
   IconButton,
 } from "@mui/material";
 import Votes from "./Votes";
-import Comments from "./Comments";
 import { Meme } from "../models/Meme.model";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { MemeDialog } from "../models/MemeDialog.model";
+import MemeDialog from "./memeDialog";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   if (!props.meme) return null;
+  const [open, setOpen] = useState(false);
+
+  const userContext = useContext(UserContext);
+
+  useEffect(() => {
+    console.log("test:", userContext);
+  }, [userContext]);
+
+  const handleOpenModal = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <Card
@@ -71,14 +87,22 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             ))}
           </Stack>
         )}
-        <Votes memeId={props.meme.id} votes={props.meme.votes} />
-        <IconButton onClick={() => handleOpenModal(props.meme)}>
-          <ChatBubbleOutlineIcon sx={{ color: "white" }} />
-          <Typography variant="body2" sx={{ color: "white", ml: 0.5 }}>
-            {props.meme.comments.lenght}
-          </Typography>
-        </IconButton>
-        {/* <Comments memeId={props.meme.id} comments={props.meme.comments} /> */}
+        <Stack direction="row" alignItems="center" spacing={1} mt={2}>
+          <Votes memeId={props.meme.id} votes={props.meme.votes} />
+          <IconButton onClick={handleOpenModal}>
+            <ChatBubbleOutlineIcon sx={{ color: "white" }} />
+            <Typography variant="body2" sx={{ color: "white", ml: 0.5 }}>
+              {props.meme.comments.length}
+            </Typography>
+          </IconButton>
+        </Stack>
+        <MemeDialog
+          dialogProps={{
+            open: open,
+            meme: props.meme,
+            onClose: handleCloseModal,
+          }}
+        />
       </CardContent>
     </Card>
   );
