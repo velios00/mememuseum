@@ -29,7 +29,6 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
         content: comment.trim(),
         User: userContext.user,
       };
-
       axios
         .post(
           `http://localhost:3000/memes/${props.dialogProps.meme?.id}/comments`,
@@ -39,18 +38,14 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
           }
         )
         .then((response) => {
-          const savedComment: Comment = {
-            ...response.data,
-            User: userContext.user, // assegna manualmente l'utente
-          };
-          setComments((prevComments) => [...prevComments, savedComment]);
+          setComments((prevComments) => [...prevComments, response.data]);
           setComment("");
         })
         .catch((error) => {
           console.error("Error adding comment:", error);
         });
     }
-  }, [comment, userContext, props.dialogProps.meme?.id]);
+  }, [comment, comments]);
 
   return (
     <Dialog

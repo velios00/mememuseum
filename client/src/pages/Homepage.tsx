@@ -4,38 +4,29 @@ import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
 import MemeCard from "../shared/components/MemeCard";
 import DailyMemeButton from "../shared/components/DailyMemeButton";
 import { Meme } from "../shared/models/Meme.model";
+import { getMemes } from "../services/MemeService";
+import TagSearchBar from "../shared/components/TagSearchBar";
 
 export default function Homepage() {
   const [memes, setMemes] = useState<Meme[]>([]);
   const [filter, setFilter] = useState<string>("top");
   const [page, setPage] = useState(1);
+  const [tags, setTags] = useState<string[]>([]);
 
   const fetchMemes = useCallback(async () => {
-    const res = await axios.get(`http://localhost:3000/memes`, {
-      params: {
-        filter,
-        page,
-      },
-    });
+    const res = await getMemes(filter, page, tags);
     setMemes(res.data);
-  }, [filter, page]);
+  }, [filter, page, tags]);
 
   useEffect(() => {
     fetchMemes();
-  }, [fetchMemes, filter, page]);
-
-  //const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
-
-  // const handleOpenModal = (meme: Meme) => {
-  //   setSelectedMeme(meme);
-  // };
+  }, [fetchMemes, filter, page, tags]);
 
   return (
     <>
       <Box p={3}>
-        <Typography variant="h4" mb={2}>
-          Homepage Meme
-        </Typography>
+        <TagSearchBar tags={tags} setTags={setTags} />
+
         <Select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -60,12 +51,7 @@ export default function Homepage() {
           gap={3}
         >
           {memes.map((meme, index) => (
-            <MemeCard
-              meme={meme}
-              key={meme.id}
-              memeIndex={index}
-              // onCommentClick={() => handleOpenModal(meme)}
-            />
+            <MemeCard meme={meme} key={meme.id} memeIndex={index} />
           ))}
         </Box>
 

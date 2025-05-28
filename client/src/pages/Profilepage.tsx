@@ -17,7 +17,7 @@ export default function Profilepage() {
     if (!userId) return;
     const userIdNumber = parseInt(userId);
     const token = localStorage.getItem("token");
-
+    console.log("userContext", userContext?.user);
     if (token) {
       const decodedToken = jwtDecode<JWTPayload>(token);
       if (userIdNumber == decodedToken.user.id && userContext?.user) {

@@ -1,7 +1,7 @@
 import { Meme } from "./Meme.model";
 
 
-export interface MemeDialog {
+export interface MemeDialogProps {
     open: boolean;
     onClose: () => void;
     meme: Meme | null;

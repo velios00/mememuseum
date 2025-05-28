@@ -1,18 +1,16 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../shared/context/UserContext";
 
 export default function useAuth() {
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    setUser(null); // aggiorna il context globalmente
     navigate("/login");
   };
 
-  const getUser = () => {
-    const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
-  };
-
-  return { user: getUser(), logout };
+  return { user, setUser, logout };
 }

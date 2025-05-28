@@ -5,23 +5,39 @@ import {
   Typography,
   Button,
   Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-
-interface HeaderProps {
-  isAuthenticated: boolean;
-  onLogout: () => void;
-}
+import { useState } from "react";
 
 export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const goToProfile = () => {
     if (user?.id) {
       navigate(`/profile/${user.id}`);
+      handleMenuClose();
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    handleMenuClose();
   };
 
   return (
@@ -63,15 +79,34 @@ export default function Header() {
 
         {user ? (
           <Box
-            onClick={goToProfile}
             sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
           >
-            <Avatar
-              src={user.image || ""}
-              alt={user.username}
-              sx={{ width: 32, height: 32, mr: 1 }}
-            />
-            <Typography variant="h6">{user.username}</Typography>
+            <Typography variant="h6" sx={{ color: "white" }}>
+              {user.username}
+            </Typography>
+            <IconButton onClick={handleMenuOpen}>
+              <Avatar
+                src={user.image || ""}
+                alt={user.username}
+                sx={{ width: 32, height: 32 }}
+              />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem onClick={goToProfile}>Profilo</MenuItem>
+              <MenuItem onClick={handleLogout}>Esci</MenuItem>
+            </Menu>
           </Box>
         ) : (
           <Box display={"flex"} gap={1}>

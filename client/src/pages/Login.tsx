@@ -37,17 +37,10 @@ export default function Login() {
         usr: loginData.usr.value,
         pwd: loginData.pwd.value,
       };
-      login(authRequest)
-        .then((response) => {
-          localStorage.setItem("token", response.data.token);
-          window.dispatchEvent(new Event("storage"));
-          toast.success("Login effettuato con successo!");
-          navigate("/");
-        })
-        .catch((error) => {
-          console.error("Errore durante il login:", error);
-          toast.error("Login fallito! Ricontrolla le credenziali.");
-        });
+      login(authRequest).then((response) => {
+        localStorage.setItem("token", response.data.token);
+        window.dispatchEvent(new Event("storage"));
+      });
     },
     [loginData]
   );

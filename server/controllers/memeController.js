@@ -55,90 +55,110 @@ export class MemeController {
     }
 
     static async getFilteredMemes(query) {
-        const filter = query.filter || "new";
-        const page = parseInt(query.page) || 1;
-        const limit = parseInt(query.limit) || 7;
-        const offset = (page - 1) * limit;
-        const userId = query.userId ? parseInt(query.userId) : null;
-        const whereClause = {};
-        if(userId) {
-            whereClause.userId = userId;
-        }
-        console.log("query: ", query);
+    const filter = query.filter || "new";
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 7;
+    const offset = (page - 1) * limit;
+    const userId = query.userId ? parseInt(query.userId) : null;
+    const whereClause = {};
+    if (userId) {
+        whereClause.userId = userId;
+    }
 
-        let orderByVotes;
+    // Estrai tag dalla query
+    const tagList = query.tags
+        ? query.tags.split(",").map((tag) => tag.trim().toLowerCase())
+        : [];
 
-        if (filter === "top"){
-            //piu' piaciuti: upvotes - downvotes decrescente
-            orderByVotes = Sequelize.literal(`(SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) - (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) DESC`);
-        } else if (filter ==="down"){
-            //meno piaciuti: upvotes - downvotes crescente
-            orderByVotes = Sequelize.literal(`(SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) - (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) ASC`);
-        } else if(filter ==="new") {
-            orderByVotes = [['createdAt', 'DESC']];
-        } else if(filter ==="old") {
-            orderByVotes = [['createdAt', 'ASC']];
-        }
+    let orderByVotes;
 
-        const memes = await Meme.findAll({
-            where: whereClause,
-            limit,
-            offset,
-            order: [orderByVotes],
-            include: [
-                {
-                    model: Tag,
-                    attributes: ["tagName"],
-                    through: {
-                        attributes: []  //evita info extra dalla tabella ponte
-                    }
-                },
-                {
+    if (filter === "top") {
+        orderByVotes = Sequelize.literal(`
+            (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) -
+            (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) DESC
+        `);
+    } else if (filter === "down") {
+        orderByVotes = Sequelize.literal(`
+            (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = 1) -
+            (SELECT COUNT(*) FROM Votes AS v WHERE v.memeId = Meme.id AND v.value = -1) ASC
+        `);
+    } else if (filter === "new") {
+        orderByVotes = [['createdAt', 'DESC']];
+    } else if (filter === "old") {
+        orderByVotes = [['createdAt', 'ASC']];
+    }
+
+    const memes = await Meme.findAll({
+        where: whereClause,
+        order: [orderByVotes],
+        limit,
+        offset,
+        include: [
+            {
+                model: Tag,
+                attributes: ["tagName"],
+                through: { attributes: [] },
+                where: tagList.length > 0
+                    ? { tagName: { [Sequelize.Op.in]: tagList } }
+                    : undefined,
+                required: tagList.length > 0,
+            },
+            {
+                model: User,
+                attributes: ["userName", "profileImage"],
+            },
+            {
+                model: Comment,
+                include: {
                     model: User,
                     attributes: ["userName", "profileImage"],
                 },
-                {
-                    model: Comment,
-                    include: {
-                        model: User,
-                        attributes: ["userName", "profileImage"],
-                    },
-                },
-                {
-                    model: Vote,
-                    attributes: ["id", "value", "userId", "createdAt"],
-                }
-            ]
-        })
-        return memes.map(meme => ({
-            id: meme.id,
-            title: meme.title,
-            image: meme.image,
-            tags: meme.Tags.map(tag => tag.tagName),
-            User: {
-                userName: meme.User?.userName,
-                profileImage: meme.User?.profileImage,
             },
-            comments:
-                meme.Comments?.map((comment) => ({
-                    id: comment.id,
-                    content: comment.content,
-                    userId: comment.userId,
-                    createdAt: comment.createdAt,
-                    User: {
-                        userName: comment.User?.userName,
-                        profileImage: comment.User?.profileImage,
-                    },
-                })) || [],
-            votes:
-                meme.Votes?.map((vote) => ({
-                    id: vote.id,
-                    value: vote.value,
-                    userId: vote.userId,
-                    createdAt: vote.createdAt,
-                })) || [],
-        }));
-    }
+            {
+                model: Vote,
+                attributes: ["id", "value", "userId", "createdAt"],
+            },
+        ],
+    });
+
+    // Filtra in JS per accertarti che abbia TUTTI i tag richiesti
+    const filteredMemes = tagList.length > 0
+        ? memes.filter((meme) => {
+              const memeTags = meme.Tags.map((t) => t.tagName.toLowerCase());
+              return tagList.every((tag) => memeTags.includes(tag));
+          })
+        : memes;
+
+    return filteredMemes.map((meme) => ({
+        id: meme.id,
+        title: meme.title,
+        image: meme.image,
+        tags: meme.Tags.map((tag) => tag.tagName),
+        User: {
+            userName: meme.User?.userName,
+            profileImage: meme.User?.profileImage,
+        },
+        comments:
+            meme.Comments?.map((comment) => ({
+                id: comment.id,
+                content: comment.content,
+                userId: comment.userId,
+                createdAt: comment.createdAt,
+                User: {
+                    userName: comment.User?.userName,
+                    profileImage: comment.User?.profileImage,
+                },
+            })) || [],
+        votes:
+            meme.Votes?.map((vote) => ({
+                id: vote.id,
+                value: vote.value,
+                userId: vote.userId,
+                createdAt: vote.createdAt,
+            })) || [],
+    }));
+}
+
 
 
     static async getMemeOfTheDay() {

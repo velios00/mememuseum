@@ -1,8 +1,9 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { uploadMeme } from "../services/MemeService";
+import toast from "react-hot-toast";
 
 export default function UploadMeme() {
   const [title, setTitle] = useState("");
@@ -27,11 +28,8 @@ export default function UploadMeme() {
       formData.append("image", image);
 
       try {
-        await axios.post("http://localhost:3000/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await uploadMeme(formData);
+        toast.success("Meme caricato con successo!");
         navigate("/");
       } catch (err) {
         console.error("Errore durante il caricamento del meme:", err);

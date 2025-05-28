@@ -12,9 +12,9 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <AuthGuard isProtected>
-        <App />
-      </AuthGuard>
+      // <AuthGuard isProtected>
+      <App />
+      // </AuthGuard>
     ),
     children: [
       {
@@ -36,17 +36,17 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         element: (
-          <AuthGuard isProtected>
-            <Register />
-          </AuthGuard>
+          // <AuthGuard isProtected>
+          <Register />
+          // </AuthGuard>
         ),
       },
       {
         path: "/login",
         element: (
-          <AuthGuard isProtected>
-            <Login />
-          </AuthGuard>
+          // <AuthGuard isProtected>
+          <Login />
+          // </AuthGuard>
         ),
       },
     ],
