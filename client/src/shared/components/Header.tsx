@@ -11,11 +11,13 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import { useState } from "react";
+import { useCallback, useContext, useState } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function Header() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  // const { user, logout } = useAuth();
+  const userContext = useContext(UserContext);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -23,22 +25,21 @@ export default function Header() {
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleMenuClose = () => {
+  const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const goToProfile = () => {
-    if (user?.id) {
-      navigate(`/profile/${user.id}`);
+  const goToProfile = useCallback(() => {
+    if (userContext?.user?.id) {
+      navigate(`/profile/${userContext?.user?.id}`);
       handleMenuClose();
     }
-  };
+  }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-    handleMenuClose();
-  };
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem("token");
+    window.dispatchEvent(new Event("storage"));
+  }, [localStorage]);
 
   return (
     <AppBar
@@ -77,17 +78,17 @@ export default function Header() {
           MemeMuseum
         </Typography>
 
-        {user ? (
+        {userContext ? (
           <Box
             sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
           >
             <Typography variant="h6" sx={{ color: "white" }}>
-              {user.username}
+              {userContext?.user?.userName}
             </Typography>
             <IconButton onClick={handleMenuOpen}>
               <Avatar
-                src={user.image || ""}
-                alt={user.username}
+                src={userContext?.user?.profileImage || ""}
+                alt={userContext?.user?.userName}
                 sx={{ width: 32, height: 32 }}
               />
             </IconButton>

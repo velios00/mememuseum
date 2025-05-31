@@ -3,7 +3,6 @@ import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import toast from "react-hot-toast";
 import { AuthRequest } from "../shared/models/AuthRequest.model";
 import { login } from "../services/AuthService";
 import { LoginData } from "../shared/models/LoginData.model";
@@ -59,33 +58,33 @@ export default function Login() {
             mb: 2,
           }}
         >
-          <ArrowBackIosIcon
+          <Button
             onClick={() => navigate("/")}
-            sx={{
-              cursor: "pointer",
-              transition: "transform 0.2s",
-              "&:hover": {
-                transform: "scale(1.2)",
-              },
-            }}
-          />
+            color="primary"
+            startIcon={<ArrowBackIosIcon />}
+          >
+            Home
+          </Button>
         </Box>
-        <Typography
-          variant="h5"
-          component="h1"
-          align="center"
-          color="white"
-          gutterBottom
-        >
-          Accedi
-        </Typography>
         <Box
           component="form"
           noValidate
+          display={"flex"}
+          flexDirection={"column"}
+          gap={2}
           autoComplete="off"
-          className="space-y-4"
           onSubmit={handleSubmit}
         >
+          <Typography
+            variant="h5"
+            component="h1"
+            align="center"
+            color="white"
+            gutterBottom
+          >
+            Accedi
+          </Typography>
+
           <TextField
             label="Username"
             variant="outlined"
@@ -124,17 +123,24 @@ export default function Login() {
           <Button variant="contained" color="primary" fullWidth type="submit">
             Accedi
           </Button>
+          <Box display={"flex"} gap={1} justifyContent="center">
+            <Typography
+              variant="body2"
+              align="center"
+              className="mt-6 text-gray-600"
+            >
+              Non hai un account?
+            </Typography>
+            <Typography
+              variant="body2"
+              component="a"
+              href="/register"
+              className="text-blue-500 hover:underline"
+            >
+              Registrati
+            </Typography>
+          </Box>
         </Box>
-        <Typography
-          variant="body2"
-          align="center"
-          className="mt-6 text-gray-600"
-        >
-          Non hai un account?
-          <a href="/register" className="text-blue-500 hover:underline">
-            Registrati
-          </a>
-        </Typography>
       </Paper>
     </div>
   );

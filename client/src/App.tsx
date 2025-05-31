@@ -5,11 +5,10 @@ import { Toaster } from "react-hot-toast";
 import { User } from "./shared/models/User.model";
 import { useCallback, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { JWTPayload } from "./shared/models/JWTPayload.model";
-import { getUserData } from "./services/UserService";
 import { UserContext } from "./shared/context/UserContext";
 import { logOut } from "./shared/utils/auth.utils";
 import { logOutInterceptor } from "./axios/Interceptors";
+import { JWTPayload } from "./shared/models/JWTPayload.model";
 
 function App() {
   const location = useLocation();
@@ -22,34 +21,30 @@ function App() {
     setUserData(user);
   }, []);
 
-  // const fetchUserData = useCallback(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     const decodedToken = jwtDecode<JWTPayload>(token);
-  //     getUserData(decodedToken.user.id).then((response) =>
-  //       setUserData(response.data)
-  //     );
-  //   }
-  // }, []);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken = jwtDecode<JWTPayload>(token);
       const currentTime = Date.now() / 1000; // Convert to seconds
       if (decodedToken.exp && decodedToken.exp < currentTime) {
         logOut(navigate);
+      } else {
+        const user: User = {
+          id: decodedToken.user.id,
+          userName: decodedToken.user.userName,
+        };
+        setUserData(user);
       }
     }
   }, []);
 
   useEffect(() => {
+    console.log("User data context updated:", userData);
+  }, [userData]);
+
+  useEffect(() => {
     logOutInterceptor(navigate);
   }, []);
-
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, [fetchUserData]);
 
   return (
     <>
@@ -58,7 +53,7 @@ function App() {
       >
         {!hideHeader && <Header />}
         <Toaster />
-        <Outlet />;
+        <Outlet />
       </UserContext.Provider>
     </>
   );

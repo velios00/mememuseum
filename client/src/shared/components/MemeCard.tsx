@@ -13,18 +13,11 @@ import Votes from "./Votes";
 import { Meme } from "../models/Meme.model";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import MemeDialog from "./memeDialog";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { UserContext } from "../context/UserContext";
+import { useCallback, useState } from "react";
 
 export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   if (!props.meme) return null;
   const [open, setOpen] = useState(false);
-
-  const userContext = useContext(UserContext);
-
-  useEffect(() => {
-    console.log("test:", userContext);
-  }, [userContext]);
 
   const handleOpenModal = useCallback(() => {
     setOpen(true);

@@ -11,11 +11,7 @@ import AuthGuard from "./shared/components/AuthGuard";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      // <AuthGuard isProtected>
-      <App />
-      // </AuthGuard>
-    ),
+    element: <App />,
     children: [
       {
         path: "",
@@ -23,7 +19,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/upload",
-        element: <UploadMeme />,
+        element: (
+          <AuthGuard isProtected>
+            <UploadMeme />
+          </AuthGuard>
+        ),
       },
       {
         path: "/profile/:userId",
@@ -36,17 +36,17 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         element: (
-          // <AuthGuard isProtected>
-          <Register />
-          // </AuthGuard>
+          <AuthGuard>
+            <Register />
+          </AuthGuard>
         ),
       },
       {
         path: "/login",
         element: (
-          // <AuthGuard isProtected>
-          <Login />
-          // </AuthGuard>
+          <AuthGuard>
+            <Login />
+          </AuthGuard>
         ),
       },
     ],
