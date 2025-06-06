@@ -1,9 +1,10 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { uploadMeme } from "../services/MemeService";
 import toast from "react-hot-toast";
+import { UserContext } from "../shared/context/UserContext";
 
 export default function UploadMeme() {
   const [title, setTitle] = useState("");
@@ -12,19 +13,25 @@ export default function UploadMeme() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const userContext = useContext(UserContext);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setError("");
 
       if (!image) {
-        return alert("Seleziona un'immagine da caricare");
+        return toast.error("Nessuna immagine da caricare");
+      }
+
+      if (!userContext?.user?.id) {
+        return toast.error("Utente non autenticato");
       }
 
       const formData = new FormData();
       formData.append("title", title);
       formData.append("tag", tag);
-      formData.append("userId", localStorage.getItem("userId") || "");
+      formData.append("userId", userContext?.user?.id?.toString() || "");
       formData.append("image", image);
 
       try {

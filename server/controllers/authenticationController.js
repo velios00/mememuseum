@@ -48,4 +48,9 @@ export class AuthenticationController {
     static isTokenValid(token, callback) {
         Jwt.verify(token, process.env.TOKEN_SECRET, callback)
     }
+
+    static async canUserModifyOwnAvatar(userId) {
+        const user = await User.findByPk(userId);
+        return user && user.id === userId;
+    }
 } 

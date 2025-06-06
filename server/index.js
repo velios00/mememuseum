@@ -8,21 +8,25 @@ import { memeRouter } from './routes/memeRouter.js';
 import { userRouter } from './routes/userRouter.js';
 import { voteRouter } from './routes/voteRouter.js';
 import { commentRouter } from './routes/commentRouter.js';
+import { enforceAuthentication } from './middleware/authorization.js';
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(authenticationRouter);
-app.use(memeRouter);
-app.use(userRouter);
-app.use(voteRouter);
-app.use("/memes", commentRouter);
 app.use('/uploads', (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // oppure "http://localhost:5173"
   next();
 }, express.static('uploads'));
+
+app.use(authenticationRouter);
+app.use(enforceAuthentication);
+app.use(memeRouter);
+app.use(userRouter);
+app.use(voteRouter);
+app.use("/memes", commentRouter);
+
 
 
 app.use((err, req, res, next) => {

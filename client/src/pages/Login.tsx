@@ -1,14 +1,19 @@
-import { FormEvent, useCallback } from "react";
+import { FormEvent, useCallback, useContext } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { AuthRequest } from "../shared/models/AuthRequest.model";
 import { login } from "../services/AuthService";
 import { LoginData } from "../shared/models/LoginData.model";
+import { UserContext } from "../shared/context/UserContext";
+import { User } from "../shared/models/User.model";
+import { jwtDecode } from "jwt-decode";
+import { JWTPayload } from "../shared/models/JWTPayload.model";
 
 export default function Login() {
   const navigate = useNavigate();
+  const userContext = useContext(UserContext);
 
   const [loginData, setLoginData] = useState<LoginData>({
     usr: {
@@ -37,7 +42,14 @@ export default function Login() {
         pwd: loginData.pwd.value,
       };
       login(authRequest).then((response) => {
-        localStorage.setItem("token", response.data.token);
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        const decodedToken = jwtDecode<JWTPayload>(token);
+        const user: User = {
+          id: decodedToken.user.id,
+          userName: decodedToken.user.userName,
+        };
+        userContext?.setUser(user);
         window.dispatchEvent(new Event("storage"));
       });
     },
@@ -131,14 +143,9 @@ export default function Login() {
             >
               Non hai un account?
             </Typography>
-            <Typography
-              variant="body2"
-              component="a"
-              href="/register"
-              className="text-blue-500 hover:underline"
-            >
+            <Link to="/register" className="text-blue-500 hover:underline">
               Registrati
-            </Typography>
+            </Link>
           </Box>
         </Box>
       </Paper>

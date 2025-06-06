@@ -172,8 +172,11 @@ export class MemeController {
             lastUpdate = now;
         }
 
-        return Meme.findByPk(currentDailyMeme.id, {
-            include: ['Tags'],
-        });
+        return {
+            id: currentDailyMeme.id,
+            title: currentDailyMeme.title,
+            image: currentDailyMeme.image,
+            tags: currentDailyMeme.tags?.map(tag => tag.tagName) || [],
+        }
     }
 }

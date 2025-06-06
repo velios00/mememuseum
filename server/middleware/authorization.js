@@ -1,4 +1,4 @@
-import { authenticationController } from '../controllers/authenticationController.js';
+import { AuthenticationController } from '../controllers/authenticationController.js';
 
 export function enforceAuthentication(req, res, next) {
     //Estrae l'header di autorizzazione della richiesta e ne estrae il token
@@ -11,7 +11,7 @@ export function enforceAuthentication(req, res, next) {
         //occchio qui
         return res.status(401).json({ message: "Unauthorized" });
     } 
-    authenticationController.isTokenValid(token, (err, token) => {
+    AuthenticationController.isTokenValid(token, (err, token) => {
         if(err) {
             return res.status(401).json({ message: "Unauthorized" });
         } else {
@@ -21,3 +21,14 @@ export function enforceAuthentication(req, res, next) {
         }
     })
 }
+
+export async function userModifyOwnAvatar(req, res, next) {
+    const userId = req.userId;
+    const userPerm = await AuthenticationController.canUserModifyOwnAvatar(userId);
+    if(userPerm){
+        next();
+    } else {
+        return res.status(403).json({ error: "Non puoi modificare l'avatar" });
+    }
+}
+

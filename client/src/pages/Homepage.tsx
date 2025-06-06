@@ -1,6 +1,5 @@
-import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Button, MenuItem, Select } from "@mui/material";
 import MemeCard from "../shared/components/MemeCard";
 import DailyMemeButton from "../shared/components/DailyMemeButton";
 import { Meme } from "../shared/models/Meme.model";
@@ -12,15 +11,21 @@ export default function Homepage() {
   const [filter, setFilter] = useState<string>("top");
   const [page, setPage] = useState(1);
   const [tags, setTags] = useState<string[]>([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const fetchMemes = useCallback(async () => {
     const res = await getMemes(filter, page, tags);
     setMemes(res.data);
+    setHasMore(res.data.length > 0);
   }, [filter, page, tags]);
 
   useEffect(() => {
     fetchMemes();
-  }, [fetchMemes, filter, page, tags]);
+  }, [fetchMemes]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
 
   return (
     <>
@@ -55,20 +60,33 @@ export default function Homepage() {
           ))}
         </Box>
 
-        <Box
-          display={"flex"}
-          flexDirection="column"
-          justifyContent={"space-between"}
-          mt={2}
-        >
-          <Button
-            variant="outlined"
-            disabled={page === 1}
-            onClick={() => setPage((prev) => prev - 1)}
+        {(page > 1 || hasMore) && (
+          <Box
+            display={"flex"}
+            flexDirection="row"
+            justifyContent={"center"}
+            mt={4}
+            gap={2}
           >
-            Avanti
-          </Button>
-        </Box>
+            {page > 1 && (
+              <Button
+                variant="outlined"
+                onClick={() => setPage((prev) => prev - 1)}
+              >
+                Indietro
+              </Button>
+            )}
+
+            {hasMore && (
+              <Button
+                variant="outlined"
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                Avanti
+              </Button>
+            )}
+          </Box>
+        )}
       </Box>
       <DailyMemeButton />
     </>

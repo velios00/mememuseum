@@ -17,7 +17,7 @@ function App() {
   const hideHeader =
     location.pathname === "/login" || location.pathname === "/register";
 
-  const changeUserDataContext = useCallback((user: User) => {
+  const changeUserDataContext = useCallback((user: User | null) => {
     setUserData(user);
   }, []);
 

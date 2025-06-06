@@ -2,37 +2,27 @@ import { User, Meme, Tag } from '../models/MemeMuseumDB.js';
 
 export class UserController {
     static async findById(userId){
-        return User.findByPk(userId);
+        const user = await User.findByPk(userId);
+
+        if(!user){
+            throw new Error("Utente non trovato");
+        }
+
+        return {
+            id: user.id,
+            userName: user.userName,
+            profileImage:  user.profileImage ? user.profileImage.replace(/\\/g, "/") : null,
+        };
     }
 
-    static async findMemesByUserId(userId) {
-                const memes = await Meme.findAll({
-                    where: {
-                        userId: userId
-                    },
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ["tagName"],
-                            through: {
-                                attributes: []  //evita info extra dalla tabella ponte
-                            }
-                        },
-                        {
-                            model: User,
-                            attributes: ["userName", "profileImage"],
-                        }
-                    ]
-                })
-                return memes.map(meme => ({
-                    id: meme.id,
-                    title: meme.title,
-                    image: meme.image,
-                    tags: meme.Tags.map(tag => tag.tagName),
-                    User: {
-                        userName: meme.User?.userName,
-                        profileImage: meme.User?.profileImage,
-                    }
-                }));
+    static async saveAvatar(userId, avatar) {
+        const user = await User.findByPk(userId);
+        user.profileImage = avatar;
+
+        const savedUser = await user.save();
+
+        return savedUser;
     }
+
+    
 }

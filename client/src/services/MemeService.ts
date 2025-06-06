@@ -33,3 +33,7 @@ export function uploadMeme(formData: FormData): Promise<AxiosResponse<Meme>> {
 export function deleteMeme(memeId: number): Promise<AxiosResponse<void>> {
   return API.delete(`http://localhost:3000/memes/${memeId}`);
 }
+
+export function getMemeOfTheDay(): Promise<AxiosResponse<Meme>> {
+  return API.get(`http://localhost:3000/meme-of-the-day`);
+}

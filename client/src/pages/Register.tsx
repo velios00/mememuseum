@@ -1,7 +1,7 @@
 import { FormEvent, useCallback, useState } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 import { RegisterData } from "../shared/models/RegisterData.model";
@@ -58,33 +58,32 @@ export default function Register() {
             mb: 2,
           }}
         >
-          <ArrowBackIosIcon
+          <Button
             onClick={() => navigate("/")}
-            sx={{
-              cursor: "pointer",
-              transition: "transform 0.2s",
-              "&:hover": {
-                transform: "scale(1.2)",
-              },
-            }}
-          />
+            color="primary"
+            startIcon={<ArrowBackIosIcon />}
+          >
+            Home
+          </Button>
         </Box>
-        <Typography
-          variant="h5"
-          component="h1"
-          align="center"
-          color="white"
-          gutterBottom
-        >
-          Crea account
-        </Typography>
         <Box
           component="form"
           noValidate
+          display={"flex"}
+          flexDirection={"column"}
+          gap={2}
           autoComplete="off"
-          className="space-y-4"
           onSubmit={handleSubmit}
         >
+          <Typography
+            variant="h5"
+            component="h1"
+            align="center"
+            color="white"
+            gutterBottom
+          >
+            Crea account
+          </Typography>
           <TextField
             label="Username"
             variant="outlined"
@@ -123,17 +122,19 @@ export default function Register() {
           <Button variant="contained" color="primary" fullWidth type="submit">
             Registrati
           </Button>
+          <Box display={"flex"} gap={1} justifyContent={"center"}>
+            <Typography
+              variant="body2"
+              align="center"
+              className="mt-6 text-gray-600"
+            >
+              Hai già un account?
+            </Typography>
+            <Link to="/login" className="text-blue-500 hover:underline">
+              Accedi
+            </Link>
+          </Box>
         </Box>
-        <Typography
-          variant="body2"
-          align="center"
-          className="mt-6 text-gray-600"
-        >
-          Hai già un account?
-          <a href="/login" className="text-blue-500 hover:underline">
-            Accedi
-          </a>
-        </Typography>
       </Paper>
     </div>
   );

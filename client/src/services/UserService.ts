@@ -11,3 +11,14 @@ export function getUserData(id: number): Promise<AxiosResponse<User>> {
 export function getUserMemes(userId: number): Promise<AxiosResponse<Meme[]>> {
     return API.get(`http://localhost:3000/memes?userId=${userId}&filter=new`);
 }
+
+export function saveAvatar(userId: any, profileImage: File): Promise<AxiosResponse<User>> {
+    const formData = new FormData();
+    formData.append("profileImage", profileImage);
+
+    return API.put(`http://localhost:3000/users/${userId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+} 

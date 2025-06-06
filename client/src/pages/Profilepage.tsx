@@ -17,15 +17,15 @@ export default function Profilepage() {
     if (!userId) return;
     const userIdNumber = parseInt(userId);
     const token = localStorage.getItem("token");
-    console.log("userContext", userContext?.user);
     if (token) {
       const decodedToken = jwtDecode<JWTPayload>(token);
       if (userIdNumber == decodedToken.user.id && userContext?.user) {
         setUserDataProfile(userContext.user);
       } else {
-        getUserData(userIdNumber).then((response) =>
-          setUserDataProfile(response.data)
-        );
+        getUserData(userIdNumber).then((response) => {
+          console.log("getUserData response", response.data);
+          setUserDataProfile(response.data);
+        });
       }
     }
   }, [userId, userContext]);

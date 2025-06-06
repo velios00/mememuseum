@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import MemeCard from "../shared/components/MemeCard";
-
-interface Meme {
-  id: number;
-  title: string;
-  image: string;
-  Tags?: { tagName: string }[];
-}
+import { getMemeOfTheDay } from "../services/MemeService";
+import { Meme } from "../shared/models/Meme.model";
 
 export default function MemeOfTheDay() {
   const [meme, setMeme] = useState<Meme | null>(null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/meme-of-the-day")
+    getMemeOfTheDay()
       .then((res) => setMeme(res.data))
       .catch((err) => console.error("Errore nel caricamento del meme:", err));
   }, []);
@@ -29,12 +22,7 @@ export default function MemeOfTheDay() {
       {!meme ? (
         <CircularProgress />
       ) : (
-        <MemeCard
-          id={meme.id}
-          title={meme.title}
-          image={meme.image}
-          tags={meme.Tags?.map((t) => t.tagName) || []}
-        />
+        <MemeCard meme={meme} key={meme.id} memeIndex={0} />
       )}
     </Box>
   );
