@@ -12,12 +12,12 @@ import { MemeDialogProps } from "../models/MemeDialogProps.model";
 import { useCallback, useContext, useState } from "react";
 import { Comment } from "../models/Comment.model";
 import { UserContext } from "../context/UserContext";
-import axios from "axios";
 import Votes from "./Votes";
 import CloseIcon from "@mui/icons-material/Close";
+import { addComment } from "../../services/CommentService";
 
 export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
-  const { open, meme, onClose } = props.dialogProps;
+  const { open, meme, onClose, onNewComment } = props.dialogProps;
 
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>(
@@ -32,23 +32,21 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
         content: comment.trim(),
         User: userContext.user,
       };
-      axios
-        .post(
-          `http://localhost:3000/memes/${props.dialogProps.meme?.id}/comments`,
-          {
-            userId: userContext.user.id,
-            content: newComment.content,
-          }
-        )
+      addComment(meme?.id, userContext.user.id, comment.trim())
         .then((response) => {
           setComments((prevComments) => [...prevComments, response.data]);
           setComment("");
+
+          if (onNewComment) {
+            console.log("Ci passo");
+            onNewComment();
+          }
         })
         .catch((error) => {
           console.error("Error adding comment:", error);
         });
     }
-  }, [comment, comments]);
+  }, [comment, meme?.id, onNewComment, userContext]);
 
   return (
     <Dialog

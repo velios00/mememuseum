@@ -15,8 +15,8 @@ export default function MemeOfTheDay() {
 
   return (
     <Box p={3} display="flex" flexDirection="column" alignItems="center">
-      <Typography variant="h4" mb={2}>
-        Meme del Giorno
+      <Typography variant="h3" mb={2} sx={{ color: "white" }}>
+        Meme of the Day!
       </Typography>
 
       {!meme ? (

@@ -32,6 +32,7 @@ function App() {
         const user: User = {
           id: decodedToken.user.id,
           userName: decodedToken.user.userName,
+          profileImage: decodedToken.user.profileImage,
         };
         setUserData(user);
       }

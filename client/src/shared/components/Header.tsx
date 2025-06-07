@@ -10,8 +10,10 @@ import {
   MenuItem,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import LoginIcon from "@mui/icons-material/Login";
+import AddReactionIcon from "@mui/icons-material/AddReaction";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 
 export default function Header() {
@@ -41,8 +43,12 @@ export default function Header() {
     localStorage.removeItem("token");
     userContext?.setUser(null);
     window.dispatchEvent(new Event("storage"));
-    navigate("/", { replace: true });
+    navigate("/");
   }, [navigate, userContext]);
+
+  useEffect(() => {
+    console.log("User data context updated yeah:", userContext);
+  }, [userContext]);
 
   return (
     <AppBar
@@ -50,9 +56,10 @@ export default function Header() {
       color="default"
       elevation={1}
       sx={{
+        border: "2px solid red",
         backgroundColor: "#1e2936",
         width: "100%",
-        padding: 2,
+        padding: { xs: "0 8 px", sm: "0 16 px" },
         mx: "auto",
         borderRadius: 5,
         maxWidth: "1200px",
@@ -62,112 +69,143 @@ export default function Header() {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 2,
+          alignItems: "center",
         }}
       >
-        {userContext?.user && (
-          <>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#218cff",
-                fontWeight: "bold",
-                display: { xs: "none", sm: "inline-flex" },
-              }}
-              onClick={() => {
-                navigate("/upload", { replace: true });
-              }}
-            >
-              Carica
-            </Button>
-            <IconButton
-              onClick={() => navigate("/upload", { replace: true })}
-              sx={{
-                color: "white",
-                display: {
-                  xs: "inline-flex",
-                  sm: "none",
-                },
-              }}
-            >
-              <CloudUploadIcon />
-            </IconButton>
-          </>
-        )}
-        <Typography
-          variant="h4"
+        {/* Colonna sinistra */}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {userContext?.user && (
+            <>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#218cff",
+                  fontWeight: "bold",
+                  display: { xs: "none", sm: "inline-flex" },
+                }}
+                onClick={() => navigate("/upload", { replace: true })}
+              >
+                Carica
+              </Button>
+              <IconButton
+                onClick={() => navigate("/upload", { replace: true })}
+                sx={{
+                  color: "white",
+                  display: { xs: "inline-flex", sm: "none" },
+                }}
+              >
+                <CloudUploadIcon />
+              </IconButton>
+            </>
+          )}
+        </Box>
+
+        {/* Colonna centrale */}
+        <Box
           sx={{
-            flexGrow: 1,
+            border: "2px solid red",
             position: "absolute",
             left: "50%",
             transform: "translateX(-50%)",
-            textAlign: "center",
-            cursor: "pointer",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: {
-              xs: "1.5rem",
-              sm: "2rem",
-              md: "2.5rem",
-            },
           }}
-          onClick={() => navigate("/", { replace: true })}
         >
-          MemeMuseum
-        </Typography>
-
-        {userContext?.user ? (
-          <Box
-            sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          <Typography
+            variant="h4"
+            sx={{
+              cursor: "pointer",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: {
+                xs: "1.5rem",
+                sm: "2rem",
+                md: "2.5rem",
+              },
+            }}
+            onClick={() => navigate("/", { replace: true })}
           >
-            <Typography
-              variant="h6"
-              sx={{ color: "white", display: { xs: "none", sm: "block" } }}
-            >
-              {userContext?.user?.userName}
-            </Typography>
-            <IconButton onClick={handleMenuOpen}>
-              <Avatar
-                src={userContext?.user?.profileImage || ""}
-                alt={userContext?.user?.userName}
-                sx={{ width: 32, height: 32 }}
-              />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleMenuClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              <MenuItem onClick={goToProfile}>Profilo</MenuItem>
-              <MenuItem onClick={handleLogout}>Esci</MenuItem>
-            </Menu>
-          </Box>
-        ) : (
-          <Box display={"flex"} gap={1}>
-            <Button
-              sx={{ color: "white", fontWeight: "bold" }}
-              onClick={() => navigate("/login")}
-            >
-              Accedi
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "#218cff", fontWeight: "bold" }}
-              onClick={() => navigate("/register")}
-            >
-              Registrati
-            </Button>
-          </Box>
-        )}
+            MemeMuseum
+          </Typography>
+        </Box>
+
+        {/* Colonna destra */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {userContext?.user ? (
+            <>
+              <Typography
+                variant="h6"
+                sx={{ color: "white", display: { xs: "none", sm: "block" } }}
+              >
+                {userContext.user.userName}
+              </Typography>
+              <IconButton onClick={handleMenuOpen}>
+                <Avatar
+                  src={userContext.user.profileImage || ""}
+                  alt={userContext.user.userName}
+                  sx={{ width: 32, height: 32 }}
+                />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem onClick={goToProfile}>Profilo</MenuItem>
+                <MenuItem onClick={handleLogout}>Esci</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              <Button
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  display: { xs: "none", sm: "flex" },
+                }}
+                onClick={() => navigate("/login")}
+              >
+                Accedi
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#218cff",
+                  fontWeight: "bold",
+                  display: { xs: "none", sm: "flex" },
+                }}
+                onClick={() => navigate("/register")}
+              >
+                Registrati
+              </Button>
+              <IconButton
+                sx={{
+                  border: "2px solid red",
+                  color: "white",
+                  display: { xs: "flex", sm: "none" },
+                }}
+                onClick={() => navigate("/login")}
+              >
+                <LoginIcon />
+              </IconButton>
+              <IconButton
+                sx={{
+                  color: "white",
+                  display: { xs: "flex", sm: "none" },
+                }}
+                onClick={() => navigate("/register")}
+              >
+                <AddReactionIcon />
+              </IconButton>
+            </>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );

@@ -13,11 +13,16 @@ import Votes from "./Votes";
 import { Meme } from "../models/Meme.model";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import MemeDialog from "./memeDialog";
+import { useNavigate } from "react-router-dom";
 import { useCallback, useState } from "react";
 
 export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   if (!props.meme) return null;
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [commentsCount, setCommentsCount] = useState(
+    props.meme.comments.length
+  );
 
   const handleOpenModal = useCallback(() => {
     setOpen(true);
@@ -44,6 +49,7 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
           <Avatar
             src={`http://localhost:3000/${props.meme.User?.profileImage || ""}`}
             alt={props.meme.User?.userName}
+            onClick={() => navigate(`/profile/${props.meme.User?.id}`)}
           />
         }
         slotProps={{
@@ -85,7 +91,7 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
           <IconButton onClick={handleOpenModal}>
             <ChatBubbleOutlineIcon sx={{ color: "white" }} />
             <Typography variant="body2" sx={{ color: "white", ml: 0.5 }}>
-              {props.meme.comments.length}
+              {commentsCount}
             </Typography>
           </IconButton>
         </Stack>
@@ -94,6 +100,7 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             open: open,
             meme: props.meme,
             onClose: handleCloseModal,
+            onNewComment: () => setCommentsCount((prev) => prev + 1),
           }}
         />
       </CardContent>

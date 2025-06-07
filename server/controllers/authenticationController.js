@@ -33,6 +33,7 @@ export class AuthenticationController {
                 user: {
                     id: user.id,
                     userName: user.userName,
+                    profileImage: user.profileImage,
                 },
             },
             process.env.TOKEN_SECRET,

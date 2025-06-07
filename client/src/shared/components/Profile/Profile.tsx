@@ -2,6 +2,8 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
   CircularProgress,
   Divider,
   Fade,
@@ -35,6 +37,7 @@ export default function Profile(props: { userData: User }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   console.log("props: ", props.userData); //perche' da solo id e userName ?
+  console.log("UserContext in Profile: ", userContext);
   const isOwnProfile =
     userContext && userContext.user && userIdNumber
       ? userIdNumber === userContext.user.id
@@ -79,7 +82,7 @@ export default function Profile(props: { userData: User }) {
     } catch (err) {
       console.error("Errore upload: ", err);
     }
-  }, [selectedFile, userContext?.user?.id]);
+  }, [selectedFile, userContext]);
 
   return (
     <Fade in={!fadeOut}>
@@ -100,9 +103,9 @@ export default function Profile(props: { userData: User }) {
               }}
             >
               <Avatar
-                src={props.userData.profileImage}
+                src={userContext?.user?.profileImage}
                 sx={{ width: 100, height: 100 }}
-                alt={props.userData.userName}
+                alt={userContext?.user?.userName}
               />
               {hovering && isOwnProfile && (
                 <Box

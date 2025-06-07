@@ -12,6 +12,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+    if (!props.votes) return;
     const userVote = props.votes.find((v) => v.userId.toString() === userId);
     const total = props.votes.reduce((sum, v) => sum + v.value, 0);
 

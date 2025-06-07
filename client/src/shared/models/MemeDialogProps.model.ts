@@ -5,4 +5,5 @@ export interface MemeDialogProps {
     open: boolean;
     onClose: () => void;
     meme: Meme | null;
+    onNewComment?: () => void;
 }

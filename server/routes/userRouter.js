@@ -1,7 +1,7 @@
 import express from 'express';
 import { UserController } from '../controllers/userController.js';
 import multer from 'multer';
-import { userModifyOwnAvatar } from '../middleware/authorization.js';
+import { enforceAuthentication, userModifyOwnAvatar } from '../middleware/authorization.js';
 
 export const userRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -19,6 +19,7 @@ userRouter.get('/user/:id', (req, res, next) => {
 
 userRouter.put(
   `/users/:userId`,
+  enforceAuthentication,
   userModifyOwnAvatar,
   upload.single("profileImage"), // ← importante: deve corrispondere al nome del campo nel frontend
   (req, res, next) => {
