@@ -4,7 +4,6 @@ import ThumbsUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbsDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import { IconButton, keyframes, Typography } from "@mui/material";
-import axios from "axios";
 import { deleteVote, saveVote, updateVote } from "../../services/VoteService";
 
 export default function Votes(props: { memeId: number; votes: any[] }) {

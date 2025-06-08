@@ -16,7 +16,7 @@ export function saveAvatar(userId: number, profileImage: File): Promise<AxiosRes
     const formData = new FormData();
     formData.append("profileImage", profileImage);
 
-    return API.put(`http://localhost:3000/users/${userId}`, formData, {
+    return API.put(`${API.defaults.baseURL}/users/${userId}`, formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },

@@ -23,7 +23,7 @@ export function getMemes(
 }
 
 export function uploadMeme(formData: FormData): Promise<AxiosResponse<Meme>> {
-  return API.post(`http://localhost:3000/upload`, formData, {
+  return API.post(`${API.defaults.baseURL}/upload`, formData, {
     headers: {
         "Content-Type": "multipart/form-data",
         },
@@ -31,9 +31,9 @@ export function uploadMeme(formData: FormData): Promise<AxiosResponse<Meme>> {
 }
 
 export function deleteMeme(memeId: number): Promise<AxiosResponse<void>> {
-  return API.delete(`http://localhost:3000/memes/${memeId}`);
+  return API.delete(`${API.defaults.baseURL}/memes/${memeId}`);
 }
 
 export function getMemeOfTheDay(): Promise<AxiosResponse<Meme>> {
-  return API.get(`http://localhost:3000/meme-of-the-day`);
+  return API.get(`${API.defaults.baseURL}/meme-of-the-day`);
 }

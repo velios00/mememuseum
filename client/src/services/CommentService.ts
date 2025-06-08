@@ -3,7 +3,7 @@ import { API } from "../axios/Interceptors";
 import { Comment } from "../shared/models/Comment.model";
 
 export function getComments(memeId: number): Promise<AxiosResponse<Comment[]>>{
-    return API.get(`http://localhost:3000/memes/${memeId}/comments`);
+    return API.get(`${API.defaults.baseURL}/memes/${memeId}/comments`);
 }
 
 export function addComment(memeId: number, userId: number, content: string): Promise<AxiosResponse<Comment>> {
