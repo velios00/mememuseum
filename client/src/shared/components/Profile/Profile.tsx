@@ -68,12 +68,12 @@ export default function Profile(props: { userData: User }) {
     formData.append("profileImage", selectedFile);
 
     try {
-      await saveAvatar(userContext?.user?.id, selectedFile);
+      const response = await saveAvatar(userContext?.user?.id, selectedFile);
       //aggiorna lo user nel context con nuova immagine
       if (userContext?.user) {
         const updatedUser = {
           ...userContext.user,
-          profileImage: URL.createObjectURL(selectedFile),
+          profileImage: response.data.profileImage,
         };
         userContext.setUser(updatedUser);
       }
@@ -86,9 +86,28 @@ export default function Profile(props: { userData: User }) {
 
   return (
     <Fade in={!fadeOut}>
-      <Box sx={{ maxWidth: "700px", margin: "auto", p: 3 }}>
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: "#151d26" }} elevation={3}>
-          <Box display="flex" alignItems="center" gap={2}>
+      <Box sx={{ maxWidth: "700px", margin: "auto", p: { xs: 2, sm: 5 } }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: 4,
+            backgroundColor: "#1e2936",
+            borderRadius: 6,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+          }}
+          elevation={3}
+        >
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap={2}
+            width="100%"
+            justifyContent="center"
+          >
             <Box
               onMouseEnter={() => setHovering(true)}
               onMouseLeave={() => setHovering(false)}
@@ -103,7 +122,11 @@ export default function Profile(props: { userData: User }) {
               }}
             >
               <Avatar
-                src={userContext?.user?.profileImage}
+                src={
+                  isOwnProfile
+                    ? `http://localhost:3000/${userContext?.user?.profileImage}`
+                    : `http://localhost:3000/${props.userData.profileImage}`
+                }
                 sx={{ width: 100, height: 100 }}
                 alt={userContext?.user?.userName}
               />

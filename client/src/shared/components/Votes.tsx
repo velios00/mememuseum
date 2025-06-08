@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ThumbsUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbsUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbsDownIcon from "@mui/icons-material/ThumbDown";
-import { IconButton, Stack, Typography } from "@mui/material";
+import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
+import { IconButton, keyframes, Typography } from "@mui/material";
 import axios from "axios";
+import { deleteVote, saveVote, updateVote } from "../../services/VoteService";
 
 export default function Votes(props: { memeId: number; votes: any[] }) {
   const [vote, setVote] = useState<1 | -1 | 0>(0);
@@ -23,51 +26,71 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
     setVoteCount(total);
   }, [props.votes, userId]);
 
-  const handleVote = async (newValue: 1 | -1) => {
-    try {
-      if (vote === newValue) {
-        await axios.delete(
-          `http://localhost:3000/memes/${props.memeId}/votes/${voteId}`
-        );
-        setVote(0);
-        setVoteCount((prevCount) => prevCount - newValue);
-        setVoteId(null);
-      } else if (vote === 0) {
-        //nuovo voto
-        const res = await axios.post(
-          `http://localhost:3000/memes/${props.memeId}/votes`,
-          {
-            userId: userId,
-            value: newValue,
-          }
-        );
-        setVote(newValue);
-        setVoteCount((prevCount) => prevCount + newValue);
-        setVoteId(res.data.id);
-      } else {
-        //cambio voto
-        await axios.put(`http://localhost:3000/memes/votes/${voteId}`, {
-          userId: userId,
-          value: newValue,
-        });
-        setVoteCount((prevCount) => prevCount + newValue - vote);
-        setVote(newValue);
+  const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+`;
+
+  const handleVote = useCallback(
+    async (newValue: 1 | -1) => {
+      try {
+        if (vote === newValue) {
+          await deleteVote(props.memeId, voteId!);
+          setVote(0);
+          setVoteCount((prev) => prev - newValue);
+          setVoteId(null);
+        } else if (vote === 0) {
+          const res = await saveVote(props.memeId, userId!, newValue);
+          setVote(newValue);
+          setVoteCount((prev) => prev + newValue);
+          setVoteId(res.data.id);
+        } else {
+          await updateVote(voteId!, userId!, newValue);
+          setVoteCount((prev) => prev + newValue - vote);
+          setVote(newValue);
+        }
+      } catch (error) {
+        console.error("Errore nel voto", error);
       }
-    } catch (error) {
-      console.error("Error handling vote:", error);
-    }
-  };
+    },
+    [vote, voteId, userId, props.memeId]
+  );
 
   return (
     <>
-      <IconButton onClick={() => handleVote(1)}>
-        <ThumbsUpIcon sx={{ color: "white" }} />
+      <IconButton
+        onClick={() => handleVote(1)}
+        sx={{
+          "&:hover": {
+            animation: `${pulse} 1s infinite`,
+          },
+        }}
+      >
+        {vote === 1 ? (
+          <ThumbsUpIcon sx={{ color: "#4CAF50" }} />
+        ) : (
+          <ThumbsUpOutlinedIcon sx={{ color: "white" }} />
+        )}
       </IconButton>
-      <Typography variant="body1" sx={{ color: "white" }}>
+
+      <Typography variant="body1" sx={{ color: "white", mx: 1 }}>
         {voteCount}
       </Typography>
-      <IconButton onClick={() => handleVote(-1)}>
-        <ThumbsDownIcon sx={{ color: "white" }} />
+
+      <IconButton
+        onClick={() => handleVote(-1)}
+        sx={{
+          "&:hover": {
+            animation: `${pulse} 1s infinite`,
+          },
+        }}
+      >
+        {vote === -1 ? (
+          <ThumbsDownIcon sx={{ color: "#F44336" }} />
+        ) : (
+          <ThumbDownOffAltOutlinedIcon sx={{ color: "white" }} />
+        )}
       </IconButton>
     </>
   );

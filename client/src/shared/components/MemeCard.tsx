@@ -1,13 +1,13 @@
 import {
   Card,
   CardContent,
-  CardHeader,
   CardMedia,
   Typography,
   Chip,
   Stack,
   Avatar,
   IconButton,
+  Box,
 } from "@mui/material";
 import Votes from "./Votes";
 import { Meme } from "../models/Meme.model";
@@ -21,7 +21,7 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [commentsCount, setCommentsCount] = useState(
-    props.meme.comments.length
+    props.meme?.comments.length
   );
 
   const handleOpenModal = useCallback(() => {
@@ -42,41 +42,79 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
         borderColor: "#798fa6",
         borderRadius: "8px",
         backgroundColor: "#151d26",
+        mx: "auto",
+        overflow: "hidden",
       }}
     >
-      <CardHeader
-        avatar={
-          <Avatar
-            src={`http://localhost:3000/${props.meme.User?.profileImage || ""}`}
-            alt={props.meme.User?.userName}
-            onClick={() => navigate(`/profile/${props.meme.User?.id}`)}
-          />
-        }
-        slotProps={{
-          title: { color: "white", fontSize: 22, fontWeight: "semibold" },
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          py: 2,
+          cursor: "pointer",
         }}
-        title={props.meme.User?.userName}
-        sx={{ pb: 2, color: "white" }}
-      />
-      <CardMedia
-        component={"img"}
-        height={"300"}
-        image={`http://localhost:3000/${props.meme.image}`}
-        alt={props.meme.title}
-        sx={{ height: 800, objectFit: "cover" }}
-      />
-      <CardContent>
+        onClick={() => navigate(`/profile/${props.meme.User?.id}`)}
+      >
+        <Avatar
+          src={`http://localhost:3000/${props.meme.User?.profileImage || ""}`}
+          alt={props.meme.User?.userName}
+          sx={{ width: 40, height: 40, mr: 1 }}
+        />
         <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
+          {props.meme.User?.userName}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+
+          aspectRatio: "1/1",
+        }}
+      >
+        <CardMedia
+          component={"img"}
+          height={"300"}
+          image={`http://localhost:3000/${props.meme.image}`}
+          alt={props.meme.title}
+          sx={{
+            width: "100%",
+            height: "auto",
+            objectFit: "contain",
+            objectPosition: "cover",
+          }}
+        />
+      </Box>
+      <CardContent>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+            fontSize: { xs: "1.1rem", sm: "1.25rem" },
+          }}
+        >
           {props.meme.title}
         </Typography>
         {props.meme.tags && props.meme.tags.length > 0 && (
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mt: 1 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="center"
+            sx={{ flexWrap: "wrap", mt: 1, px: { xs: 0.5, sm: 1 } }}
+          >
             {props.meme.tags.map((tag, index) => (
               <Chip
                 sx={{
                   backgroundColor: "#1e2936",
                   color: "white",
                   fontWeight: "bold",
+                  fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                  height: { xs: 24, sm: 32 },
                 }}
                 key={index}
                 label={`#${tag}`}
@@ -86,7 +124,13 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             ))}
           </Stack>
         )}
-        <Stack direction="row" alignItems="center" spacing={1} mt={2}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          spacing={{ xs: 0.5, sm: 2 }}
+          mt={2}
+        >
           <Votes memeId={props.meme.id} votes={props.meme.votes} />
           <IconButton onClick={handleOpenModal}>
             <ChatBubbleOutlineIcon sx={{ color: "white" }} />

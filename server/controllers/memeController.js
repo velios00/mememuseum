@@ -105,7 +105,7 @@ export class MemeController {
             },
             {
                 model: User,
-                attributes: ["userName", "profileImage"],
+                attributes: ["id", "userName", "profileImage"],
             },
             {
                 model: Comment,
@@ -135,6 +135,7 @@ export class MemeController {
         image: meme.image,
         tags: meme.Tags.map((tag) => tag.tagName),
         User: {
+            id: meme.User.id,
             userName: meme.User?.userName,
             profileImage: meme.User?.profileImage,
         },

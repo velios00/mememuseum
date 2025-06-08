@@ -56,7 +56,6 @@ export default function Header() {
       color="default"
       elevation={1}
       sx={{
-        border: "2px solid red",
         backgroundColor: "#1e2936",
         width: "100%",
         padding: { xs: "0 8 px", sm: "0 16 px" },
@@ -103,7 +102,6 @@ export default function Header() {
         {/* Colonna centrale */}
         <Box
           sx={{
-            border: "2px solid red",
             position: "absolute",
             left: "50%",
             transform: "translateX(-50%)",
@@ -128,7 +126,7 @@ export default function Header() {
         </Box>
 
         {/* Colonna destra */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0 }}>
           {userContext?.user ? (
             <>
               <Typography
@@ -139,7 +137,7 @@ export default function Header() {
               </Typography>
               <IconButton onClick={handleMenuOpen}>
                 <Avatar
-                  src={userContext.user.profileImage || ""}
+                  src={`http://localhost:3000/${userContext.user.profileImage}`}
                   alt={userContext.user.userName}
                   sx={{ width: 32, height: 32 }}
                 />
@@ -186,7 +184,6 @@ export default function Header() {
               </Button>
               <IconButton
                 sx={{
-                  border: "2px solid red",
                   color: "white",
                   display: { xs: "flex", sm: "none" },
                 }}

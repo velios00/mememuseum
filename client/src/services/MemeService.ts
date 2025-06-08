@@ -19,7 +19,7 @@ export function getMemes(
     params.userId = userId;
   }
 
-  return API.get(`http://localhost:3000/memes`, { params})
+  return API.get(`${API.defaults.baseURL}/memes`, { params})
 }
 
 export function uploadMeme(formData: FormData): Promise<AxiosResponse<Meme>> {

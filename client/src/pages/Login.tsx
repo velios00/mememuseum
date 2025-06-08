@@ -53,7 +53,7 @@ export default function Login() {
         window.dispatchEvent(new Event("storage"));
       });
     },
-    [loginData]
+    [loginData.pwd.value, loginData.usr.value, userContext]
   );
 
   return (

@@ -24,7 +24,7 @@ app.use('/uploads', (req, res, next) => {
   next();
 }, express.static('uploads'));
 
-app.use('/avatars', express.static(path.join(__dirname, 'uploads/avatars')));
+// app.use('/avatars', express.static(path.join(__dirname, 'uploads/avatars')));
 // app.use('/memes', express.static(path.join(__dirname, 'uploads/memes')));
 
 app.use(authenticationRouter);

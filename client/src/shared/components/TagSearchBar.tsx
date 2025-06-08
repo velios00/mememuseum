@@ -39,7 +39,7 @@ export default function TagSearchBar({ tags, setTags }: TagSearchBarProps) {
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="Aggiungi un tag e invia"
+        placeholder="Filtra per tag..."
         InputProps={{
           disableUnderline: true,
           style: { color: "white", minWidth: "120px" },

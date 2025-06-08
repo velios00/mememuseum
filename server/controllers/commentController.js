@@ -27,11 +27,15 @@ export class CommentController {
         if (!body.userId) {
             throw new Error("User ID is required");
         }
-        const newComment = Comment.build(body);
-        newComment.memeId = memeId;
-        newComment.userId = body.userId;
-        return newComment.save();
-    }
+        const newComment = await Comment.create({
+        ...body,
+        memeId: memeId,
+        userId: body.userId,
+  });
+        return Comment.findByPk(newComment.id, {
+    include: [{ model: User, attributes: ["id", "userName", "profileImage"] }],
+  });
+}
 
     static async findById(commentId) {
         return Comment.findByPk(commentId);

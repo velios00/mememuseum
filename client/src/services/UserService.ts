@@ -19,7 +19,6 @@ export function saveAvatar(userId: number, profileImage: File): Promise<AxiosRes
     return API.put(`http://localhost:3000/users/${userId}`, formData, {
         headers: {
             "Content-Type": "multipart/form-data",
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
     });
 } 

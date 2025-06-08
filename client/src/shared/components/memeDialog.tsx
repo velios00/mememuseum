@@ -15,9 +15,11 @@ import { UserContext } from "../context/UserContext";
 import Votes from "./Votes";
 import CloseIcon from "@mui/icons-material/Close";
 import { addComment } from "../../services/CommentService";
+import { useNavigate } from "react-router-dom";
 
 export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
   const { open, meme, onClose, onNewComment } = props.dialogProps;
+  const navigate = useNavigate();
 
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>(
@@ -101,13 +103,22 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
           }}
         >
           {/* Autore */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            onClick={() => navigate(`/profile/${meme?.User.id}`)}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
             <Avatar
               src={`http://localhost:3000/${meme?.User?.profileImage || ""}`}
               alt={meme?.User?.userName}
               sx={{ width: 32, height: 32 }}
             />
-            <Typography variant="subtitle1" color="white">
+            <Typography variant="h5" color="white">
               {meme?.User?.userName}
             </Typography>
           </Box>
@@ -216,13 +227,19 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
                 >
                   <Avatar
                     alt={comment.User?.userName}
-                    src={comment.User?.profileImage || ""}
-                    sx={{ width: 24, height: 24 }}
+                    src={`http://localhost:3000/${comment.User?.profileImage}`}
+                    sx={{ width: 24, height: 24, cursor: "pointer" }}
+                    onClick={() => {
+                      navigate(`/profile/${comment.userId}`);
+                    }}
                   />
                   <Box>
                     <Typography
                       variant="body2"
-                      sx={{ mb: 0.5, fontWeight: "bold" }}
+                      sx={{ mb: 0.5, fontWeight: "bold", cursor: "pointer" }}
+                      onClick={() => {
+                        navigate(`/profile/${comment.userId}`);
+                      }}
                     >
                       {comment.User?.userName}
                     </Typography>
