@@ -7,6 +7,7 @@ export default function AuthGuard(props: {
   isProtected?: boolean;
 }) {
   const token = useSyncExternalStore(subscribe, getToken);
+
   if (props.isProtected) {
     return token ? props.children : <Navigate to="/login" replace />;
   }

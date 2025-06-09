@@ -21,7 +21,8 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [commentsCount, setCommentsCount] = useState(
-    props.meme?.comments.length ?? 0
+    //props.meme?.comments.length ?? 0
+    Array.isArray(props.meme?.comments) ? props.meme.comments.length : 0
   );
 
   const handleOpenModal = useCallback(() => {

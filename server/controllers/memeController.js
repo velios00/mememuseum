@@ -160,27 +160,6 @@ export class MemeController {
     }));
 }
 
-
-
-    // static async getMemeOfTheDay() {
-    //     const now = new Date();
-    //     const shouldUpdate = !lastUpdate || now - lastUpdate > 24 * 60 * 60 * 1000;
-        
-    //     if(shouldUpdate) {
-    //         const memes = await Meme.findAll();
-    //         const randomIndex = Math.floor(Math.random() * memes.length);
-    //         currentDailyMeme = memes[randomIndex];
-    //         lastUpdate = now;
-    //     }
-
-    //     return {
-    //         id: currentDailyMeme.id,
-    //         title: currentDailyMeme.title,
-    //         image: currentDailyMeme.image,
-    //         tags: currentDailyMeme.tags?.map(tag => tag.tagName) || [],
-    //     }
-    // }
-
     static async getMemeOfTheDay() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -209,7 +188,24 @@ export class MemeController {
             dailyEntry = await DailyMeme.findOne({ where: { date: today }, include: Meme});
         }
             const meme = await Meme.findByPk(dailyEntry.memeId, {
-                include: [{ model: Tag }],
+                include: [{ model: Tag },
+                    {
+                        model: User,
+                        attributes: ["id", "userName", "profileImage"],
+                    },
+                    {
+                        model: Comment,
+                        include: {
+                            model: User,
+                            attributes: ["userName", "profileImage"],
+                        },
+                    },
+                    {
+                        model: Vote,
+                        attributes: ["id", "value", "userId", "createdAt"]
+                    }
+                ],
+                
             });
             
             return {
@@ -217,6 +213,31 @@ export class MemeController {
                 title: meme.title,
                 image: meme.image,
                 tags: meme.Tags.map(tag => tag.tagName),
+                User: {
+                    id: meme.User.id,
+                    userName: meme.User.userName,
+                    profileImage: meme.User.profileImage,
+                },
+                comments:
+            meme.Comments?.map((comment) => ({
+                id: comment.id,
+                content: comment.content,
+                userId: comment.userId,
+                createdAt: comment.createdAt,
+                User: {
+                    userName: comment.User?.userName,
+                    profileImage: comment.User?.profileImage,
+                },
+            })) || [],
+            votes:
+                meme.Votes?.map((vote) => ({
+                id: vote.id,
+                value: vote.value,
+                userId: vote.userId,
+                createdAt: vote.createdAt,
+            })) || [],
+                
+                
             }
         
     }
