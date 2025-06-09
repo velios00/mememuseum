@@ -4,6 +4,7 @@ import { createModel as createMemeModel } from './Meme.js';
 import { createModel as createTagModel } from './Tag.js';
 import { createModel as createVoteModel } from './Vote.js';
 import { createModel as createCommentModel } from './Comment.js';
+import { createModel as createDailyMemeModel } from './DailyMeme.js'
 
 import dotenv from 'dotenv/config.js';
 
@@ -17,8 +18,9 @@ createMemeModel(database);
 createTagModel(database);
 createVoteModel(database);
 createCommentModel(database);
+createDailyMemeModel(database);
 
-export const { User, Meme, Tag, Vote, Comment} = database.models;
+export const { User, Meme, Tag, Vote, Comment, DailyMeme } = database.models;
 
 // Definizione delle relazioni tra i modelli
 User.Memes = User.hasMany(Meme, {
@@ -71,8 +73,10 @@ Tag.Memes = Tag.belongsToMany(Meme, {
     foreignKey: "tagId",
 });
 
+DailyMeme.Meme = DailyMeme.belongsTo(Meme, {
+  foreignKey: { name: 'memeId', allowNull: false },
+});
 
-//Vedere come collegare tag
 
 Meme.Comments = Meme.hasMany(Comment, {
     foreignKey: {name: "memeId", allowNull: false},

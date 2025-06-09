@@ -10,6 +10,7 @@ import { UserContext } from "../shared/context/UserContext";
 import { User } from "../shared/models/User.model";
 import { jwtDecode } from "jwt-decode";
 import { JWTPayload } from "../shared/models/JWTPayload.model";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,17 +42,22 @@ export default function Login() {
         usr: loginData.usr.value,
         pwd: loginData.pwd.value,
       };
-      login(authRequest).then((response) => {
-        const token = response.data.token;
-        localStorage.setItem("token", token);
-        const decodedToken = jwtDecode<JWTPayload>(token);
-        const user: User = {
-          id: decodedToken.user.id,
-          userName: decodedToken.user.userName,
-        };
-        userContext?.setUser(user);
-        window.dispatchEvent(new Event("storage"));
-      });
+      login(authRequest)
+        .then((response) => {
+          const token = response.data.token;
+          localStorage.setItem("token", token);
+          const decodedToken = jwtDecode<JWTPayload>(token);
+          const user: User = {
+            id: decodedToken.user.id,
+            userName: decodedToken.user.userName,
+          };
+          userContext?.setUser(user);
+          window.dispatchEvent(new Event("storage"));
+        })
+        .catch((error) => {
+          toast.error("Login Fallito. Usa credenziali diverse");
+          console.error("Login error: ", error);
+        });
     },
     [loginData.pwd.value, loginData.usr.value, userContext]
   );

@@ -22,8 +22,9 @@ import {
 } from "react";
 import { UserContext } from "../../context/UserContext";
 import MemeCard from "../MemeCard";
-import { getUserMemes, saveAvatar } from "../../../services/UserService";
+import { saveAvatar } from "../../../services/UserService";
 import { Meme } from "../../models/Meme.model";
+import { getMemes } from "../../../services/MemeService";
 
 export default function Profile(props: { userData: User }) {
   const userContext = useContext(UserContext);
@@ -35,6 +36,13 @@ export default function Profile(props: { userData: User }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState(1);
+  const memesPerPage = 10;
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
 
   console.log("props: ", props.userData); //perche' da solo id e userName ?
   console.log("UserContext in Profile: ", userContext);
@@ -42,17 +50,22 @@ export default function Profile(props: { userData: User }) {
     userContext && userContext.user && userIdNumber
       ? userIdNumber === userContext.user.id
       : false;
+  console.log("own profile", isOwnProfile);
 
   useEffect(() => {
-    getUserMemes(props.userData.id)
+    if (!props.userData.id) return;
+
+    getMemes("new", page, [], props.userData.id)
       .then((res) => {
+        const newMemes = res.data;
         setMemes(res.data);
+        setHasMore(newMemes.length === memesPerPage);
       })
       .catch((err) => {
-        console.error("Error fetching memes:", err);
-        setMemes([]); //fallback vuoto
+        console.error("Errore nel caricamento dei meme: ", err);
+        setMemes([]);
       });
-  }, [props.userData.id]);
+  }, [page, props.userData.id]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -199,6 +212,33 @@ export default function Profile(props: { userData: User }) {
             {memes.map((meme, index) => (
               <MemeCard meme={meme} key={meme.id} memeIndex={index} />
             ))}
+          </Box>
+        )}
+        {(page > 0 || hasMore) && (
+          <Box
+            display={"flex"}
+            flexDirection="row"
+            justifyContent={"center"}
+            mt={4}
+            gap={2}
+          >
+            {page > 1 && (
+              <Button
+                variant="outlined"
+                onClick={() => setPage((prev) => prev - 1)}
+              >
+                Indietro
+              </Button>
+            )}
+
+            {hasMore && (
+              <Button
+                variant="outlined"
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                Avanti
+              </Button>
+            )}
           </Box>
         )}
       </Box>

@@ -36,12 +36,19 @@ export default function Register() {
         usr: registerData.usr.value,
         pwd: registerData.pwd.value,
       };
-      register(authRequest).then(() => {
-        toast.success("Registrazione effettuata con successo!");
-        navigate("/login");
-      });
+      register(authRequest)
+        .then(() => {
+          toast.success("Registrazione effettuata con successo!");
+          navigate("/login");
+        })
+        .catch((error) => {
+          toast.error(
+            "Errore nella registrazione, prova ad usare credenziali diverse"
+          );
+          console.error("Errore nella registrazione: ", error);
+        });
     },
-    [registerData]
+    [navigate, registerData.pwd.value, registerData.usr.value]
   );
 
   return (

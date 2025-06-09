@@ -139,7 +139,7 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
 
           {/* Titolo */}
           <Typography
-            variant="h5"
+            variant="h4"
             color="white"
             sx={{ mt: 2, textAlign: "center", fontWeight: "bold" }}
           >
@@ -159,8 +159,8 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
               <Box
                 key={idx}
                 sx={{
-                  px: 1.5,
-                  py: 0.5,
+                  px: 2,
+                  py: 1,
                   backgroundColor: "#218cff",
                   borderRadius: "16px",
                   fontSize: "0.75rem",
@@ -170,20 +170,6 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
                 #{String(tag)}
               </Box>
             ))}
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 2,
-              mt: 1,
-            }}
-          >
-            <Votes
-              memeId={props.dialogProps.meme?.id}
-              votes={props.dialogProps.meme?.votes}
-            />
           </Box>
         </Box>
 

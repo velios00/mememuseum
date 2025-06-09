@@ -1,4 +1,4 @@
-import { Comment, Meme, Tag, User, Vote } from "../models/MemeMuseumDB.js";
+import { Comment, DailyMeme, Meme, Tag, User, Vote } from "../models/MemeMuseumDB.js";
 import path from "path";
 import fs from "fs";
 import Sequelize from "sequelize";
@@ -57,7 +57,7 @@ export class MemeController {
     static async getFilteredMemes(query) {
     const filter = query.filter || "new";
     const page = parseInt(query.page) || 1;
-    const limit = parseInt(query.limit) || 7;
+    const limit = parseInt(query.limit) || 10;
     const offset = (page - 1) * limit;
     const userId = query.userId ? parseInt(query.userId) : null;
     const whereClause = {};
@@ -162,22 +162,62 @@ export class MemeController {
 
 
 
-    static async getMemeOfTheDay() {
-        const now = new Date();
-        const shouldUpdate = !lastUpdate || now - lastUpdate > 24 * 60 * 60 * 1000;
+    // static async getMemeOfTheDay() {
+    //     const now = new Date();
+    //     const shouldUpdate = !lastUpdate || now - lastUpdate > 24 * 60 * 60 * 1000;
         
-        if(shouldUpdate) {
-            const memes = await Meme.findAll();
-            const randomIndex = Math.floor(Math.random() * memes.length);
-            currentDailyMeme = memes[randomIndex];
-            lastUpdate = now;
-        }
+    //     if(shouldUpdate) {
+    //         const memes = await Meme.findAll();
+    //         const randomIndex = Math.floor(Math.random() * memes.length);
+    //         currentDailyMeme = memes[randomIndex];
+    //         lastUpdate = now;
+    //     }
 
-        return {
-            id: currentDailyMeme.id,
-            title: currentDailyMeme.title,
-            image: currentDailyMeme.image,
-            tags: currentDailyMeme.tags?.map(tag => tag.tagName) || [],
+    //     return {
+    //         id: currentDailyMeme.id,
+    //         title: currentDailyMeme.title,
+    //         image: currentDailyMeme.image,
+    //         tags: currentDailyMeme.tags?.map(tag => tag.tagName) || [],
+    //     }
+    // }
+
+    static async getMemeOfTheDay() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        //esiste gia' un dailymeme per oggi ?
+        let dailyEntry = await DailyMeme.findOne({ where: { date: today}, include: Meme});
+
+        //altrimenti
+        if(!dailyEntry) {
+            const memes = await Meme.findAll({
+                include: [{ model: Tag }],
+            });
+
+            if(memes.length === 0){
+                throw new Error("No memes available");
+            }
+
+            const randomIndex = Math.floor(Math.random() * memes.length);
+            const selectedMeme = memes[randomIndex];
+
+            dailyEntry = await DailyMeme.create({
+                date: today,
+                memeId: selectedMeme.id,
+            });
+
+            dailyEntry = await DailyMeme.findOne({ where: { date: today }, include: Meme});
         }
+            const meme = await Meme.findByPk(dailyEntry.memeId, {
+                include: [{ model: Tag }],
+            });
+            
+            return {
+                id: meme.id,
+                title: meme.title,
+                image: meme.image,
+                tags: meme.Tags.map(tag => tag.tagName),
+            }
+        
     }
 }
