@@ -14,7 +14,7 @@ export default function UploadMeme() {
   const navigate = useNavigate();
 
   const userContext = useContext(UserContext);
-
+  console.log("Pipoo");
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -42,7 +42,7 @@ export default function UploadMeme() {
         console.error("Errore durante il caricamento del meme:", err);
       }
     },
-    [title, tag, image, navigate]
+    [image, userContext?.user?.id, title, tag, navigate]
   );
 
   return (

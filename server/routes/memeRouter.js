@@ -1,6 +1,7 @@
 import express from 'express';
 import { MemeController } from '../controllers/memeController.js';
 import { memeExists } from '../middleware/memeExists.js';
+import { enforceAuthentication } from '../middleware/authorization.js';
 import multer from 'multer';
 
 const upload = multer({ dest: 'uploads/' });

@@ -38,7 +38,7 @@ export class UserController {
             const imagePath = `uploads/${newFilename}`;
 
             const user = await User.findByPk(userId)
-            console.log("user trovato : ", user)
+            //console.log"user trovato : ", user)
             user.profileImage = imagePath
             await user.save();
 

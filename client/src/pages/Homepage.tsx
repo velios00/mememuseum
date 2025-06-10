@@ -27,7 +27,7 @@ export default function Homepage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  console.log("memes", memes);
+  //console.log"memes", memes);
 
   return (
     <>

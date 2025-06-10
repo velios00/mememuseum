@@ -2,8 +2,8 @@ import { Vote, Meme, User } from "../models/MemeMuseumDB.js";
 
 export class VoteController {
     static async createVote(memeId, body){
-        //console.log("memeId", memeId);
-       // console.log("userId", body.userId);
+        ////console.log"memeId", memeId);
+       // //console.log"userId", body.userId);
         let existingVote = await Vote.findOne({ where: { memeId: memeId, userId: body.userId } });
         if (existingVote) {
             throw new Error("User has already voted for this meme.");
@@ -41,8 +41,8 @@ export class VoteController {
         if (!existingVote) {
             throw new Error("No vote on this idea yet.");
         }
-        //console.log("existingVote", existingVote);
-        //console.log("modifiedVote", modifiedVote);
+        ////console.log"existingVote", existingVote);
+        ////console.log"modifiedVote", modifiedVote);
         existingVote.value = modifiedVote.value;
         return existingVote.save()
     }

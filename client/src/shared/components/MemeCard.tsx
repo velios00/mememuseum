@@ -97,6 +97,9 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             fontWeight: "bold",
             textAlign: "center",
             fontSize: { xs: "1.1rem", sm: "1.25rem" },
+            wordBreak: "break-word", // Permette di andare a capo sulle parole lunghe
+            overflowWrap: "break-word", // Alternativa più compatibile
+            whiteSpace: "normal", // Garantisce che il testo possa andare a capo
           }}
         >
           {props.meme.title}

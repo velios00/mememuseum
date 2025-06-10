@@ -45,7 +45,7 @@ export class MemeController {
     }
 
     static async deleteMeme(memeId) {
-        console.log("memeid: ", memeId);
+        //console.log"memeid: ", memeId);
         const meme = await Meme.findByPk(memeId);
         if(!meme)
             throw new Error("Meme not found");

@@ -5,7 +5,7 @@ export class AuthenticationController {
     static async register(body) {
         let newUser = new User({ userName: body.usr, password: body.pwd });
         const foundUser = await User.findOne({ where: {userName: newUser.userName}});
-        // console.log("Found user: ", foundUser);
+        // //console.log"Found user: ", foundUser);
         if(foundUser){
             throw new Error("User already exists"); // L'utente esiste già
         }
@@ -17,7 +17,7 @@ export class AuthenticationController {
         const user = new User({ userName: body.usr, password: body.pwd });
     
         const foundUser = await User.findOne({ where: { userName: user.userName, password: user.password } });
-        console.log("user in check: ", foundUser);
+        //console.log"user in check: ", foundUser);
     
         if (!foundUser) {
             throw new Error("Invalid username or password"); // L'utente non esiste o la password è errata
@@ -27,7 +27,7 @@ export class AuthenticationController {
     }
     
     static issueToken(user) {
-        console.log("User in issueToken: ", user);
+        //console.log"User in issueToken: ", user);
         const createdToken = Jwt.sign(
             {
                 user: {

@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { User } from "../shared/models/User.model";
 import { API } from "../axios/Interceptors";
 

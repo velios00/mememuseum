@@ -28,8 +28,10 @@ import { getMemes } from "../../../services/MemeService";
 
 export default function Profile(props: { userData: User }) {
   const userContext = useContext(UserContext);
-  const { userId } = useParams();
-  const userIdNumber = userId ? parseInt(userId) : null;
+  //const { userId } = useParams();
+  //const userId = props.userData.id;
+  const user = props.userData;
+  // const userIdNumber = userId ? parseInt(userId) : null;
   const [memes, setMemes] = useState<Meme[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hovering, setHovering] = useState(false);
@@ -44,14 +46,21 @@ export default function Profile(props: { userData: User }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  console.log("props: ", props.userData); //perche' da solo id e userName ?
-  console.log("UserContext in Profile: ", userContext);
+  //console.log"props: ", props.userData); //perche' da solo id e userName ?
+  //console.log"UserContext in Profile: ", userContext);
+
   const isOwnProfile =
-    userContext && userContext.user && userIdNumber
-      ? userIdNumber === userContext.user.id
+    userContext && userContext.user && user.id
+      ? user.id === userContext.user.id
       : false;
   console.log("own profile", isOwnProfile);
 
+  // const avatarSrc = isOwnProfile
+  //   ? `http://localhost:3000/${props.userData.profileImage}`
+  //   : `http://localhost:3000/${props.userData.profileImage}`;
+  let avatarSrc = `http://localhost:3000/${user.profileImage}`;
+
+  console.log("Avatarsrc", avatarSrc);
   useEffect(() => {
     if (!props.userData.id) return;
 
@@ -81,21 +90,28 @@ export default function Profile(props: { userData: User }) {
     formData.append("profileImage", selectedFile);
 
     try {
+      console.log("UserContext before update", UserContext);
       const response = await saveAvatar(userContext?.user?.id, selectedFile);
       //aggiorna lo user nel context con nuova immagine
-      if (userContext?.user) {
-        const updatedUser = {
-          ...userContext.user,
-          profileImage: response.data.profileImage,
-        };
-        userContext.setUser(updatedUser);
+      if (response.data) {
+        if (userContext?.user) {
+          userContext.setUser({
+            id: userContext.user.id,
+            userName: userContext.user.userName,
+            profileImage: response.data.profileImage,
+          });
+        }
+        // userContext.setUser(response.data);
+        console.log("Vero userContext", userContext);
+        user.profileImage = response.data.profileImage;
+        console.log("UserContext after update", response.data);
       }
-      setShowConfirm(false);
+
       setSelectedFile(null);
     } catch (err) {
       console.error("Errore upload: ", err);
     }
-  }, [selectedFile, userContext]);
+  }, [selectedFile, user, userContext]);
 
   return (
     <Fade in={!fadeOut}>
@@ -135,11 +151,7 @@ export default function Profile(props: { userData: User }) {
               }}
             >
               <Avatar
-                src={
-                  isOwnProfile
-                    ? `http://localhost:3000/${userContext?.user?.profileImage}`
-                    : `http://localhost:3000/${props.userData.profileImage}`
-                }
+                src={avatarSrc}
                 sx={{ width: 100, height: 100 }}
                 alt={userContext?.user?.userName}
               />

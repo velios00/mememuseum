@@ -40,7 +40,7 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
           setComment("");
 
           if (onNewComment) {
-            console.log("Ci passo");
+            //console.log"Ci passo");
             onNewComment();
           }
         })

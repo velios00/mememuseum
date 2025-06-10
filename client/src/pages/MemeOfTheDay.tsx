@@ -6,7 +6,7 @@ import { Meme } from "../shared/models/Meme.model";
 
 export default function MemeOfTheDay() {
   const [meme, setMeme] = useState<Meme | null>(null);
-  console.log("meme", meme);
+  //console.log"meme", meme);
 
   useEffect(() => {
     getMemeOfTheDay()
