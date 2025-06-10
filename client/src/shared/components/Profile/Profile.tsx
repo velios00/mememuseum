@@ -44,13 +44,10 @@ export default function Profile(props: { userData: User }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  console.log("props: ", props.userData); //perche' da solo id e userName ?
-  console.log("UserContext in Profile: ", userContext);
   const isOwnProfile =
     userContext && userContext.user && userIdNumber
       ? userIdNumber === userContext.user.id
       : false;
-  console.log("own profile", isOwnProfile);
 
   useEffect(() => {
     if (!props.userData.id) return;
@@ -80,10 +77,12 @@ export default function Profile(props: { userData: User }) {
     const formData = new FormData();
     formData.append("profileImage", selectedFile);
 
+    if (!userContext?.user?.id) return
+
     try {
-      const response = await saveAvatar(userContext?.user?.id, selectedFile);
+      const response = await saveAvatar(userContext.user.id, selectedFile);
       //aggiorna lo user nel context con nuova immagine
-      if (userContext?.user) {
+      if (userContext.user) {
         const updatedUser = {
           ...userContext.user,
           profileImage: response.data.profileImage,

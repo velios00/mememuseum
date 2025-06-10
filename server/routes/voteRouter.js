@@ -1,10 +1,11 @@
 import express from 'express';
 import { VoteController } from '../controllers/voteController.js';
 import { memeExists } from '../middleware/memeExists.js';
+import { enforceAuthentication } from "../middleware/authorization.js";
 
 export const voteRouter = express.Router();
 
-voteRouter.post("/memes/:memeId/votes", memeExists, (req, res, next) => {
+voteRouter.post("/memes/:memeId/votes", enforceAuthentication, memeExists, (req, res, next) => {
     VoteController.createVote(req.params.memeId, req.body)
     .then((result) => {
         res.json(result);

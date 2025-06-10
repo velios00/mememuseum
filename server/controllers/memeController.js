@@ -54,7 +54,7 @@ export class MemeController {
         return meme;
     }
 
-    static async getFilteredMemes(query) {
+static async getFilteredMemes(query) {
     const filter = query.filter || "new";
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 10;
@@ -98,9 +98,6 @@ export class MemeController {
                 model: Tag,
                 attributes: ["tagName"],
                 through: { attributes: [] },
-                where: tagList.length > 0
-                    ? { tagName: { [Sequelize.Op.in]: tagList } }
-                    : undefined,
                 required: tagList.length > 0,
             },
             {

@@ -50,6 +50,7 @@ export default function Login() {
           const user: User = {
             id: decodedToken.user.id,
             userName: decodedToken.user.userName,
+            profileImage: decodedToken.user.profileImage,
           };
           userContext?.setUser(user);
           window.dispatchEvent(new Event("storage"));

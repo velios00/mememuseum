@@ -2,12 +2,13 @@ import express from 'express';
 import { MemeController } from '../controllers/memeController.js';
 import { memeExists } from '../middleware/memeExists.js';
 import multer from 'multer';
+import { enforceAuthentication } from "../middleware/authorization.js";
+
 
 const upload = multer({ dest: 'uploads/' });
-
 export const memeRouter = express.Router();
 
-memeRouter.post('/upload', upload.single('image'), (req, res, next) => {
+memeRouter.post('/upload', enforceAuthentication, upload.single('image'), (req, res, next) => {
     //console.log("Request body: ", req);
     const body = JSON.parse(JSON.stringify(req.body));
     //console.log("Parsed body: ", body);

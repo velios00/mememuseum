@@ -11,6 +11,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
   const [voteCount, setVoteCount] = useState(0);
   const [voteId, setVoteId] = useState<number | null>(null); // serve per put e delete
 
+    // accunciall
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
