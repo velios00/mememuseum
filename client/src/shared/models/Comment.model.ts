@@ -4,5 +4,6 @@ export interface Comment {
     User: {
         userName: string;
         profileImage: string;
-    }
+    };
+    userId: string
 }

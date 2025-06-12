@@ -40,6 +40,7 @@ export default function UploadMeme() {
         navigate("/");
       } catch (err) {
         console.error("Errore durante il caricamento del meme:", err);
+        toast.error("Errore nel caricamento del meme");
       }
     },
     [image, userContext?.user?.id, title, tag, navigate]

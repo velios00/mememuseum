@@ -1,4 +1,4 @@
 export function logOut(navigateFn: (path: string) => void) {
   localStorage.removeItem("token");
-  navigateFn("/login");
+  navigateFn("/login");     //forse qui metto / ?
 }

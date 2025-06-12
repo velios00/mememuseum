@@ -16,6 +16,7 @@ export default function Register() {
       value: "",
       validateCriteria: (value: string) => {
         if (value.length < 3) return "Username troppo corto";
+        if (value.length > 15) return "Username troppo lungo";
         return "";
       },
     },
@@ -31,6 +32,21 @@ export default function Register() {
   const handleSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
+
+      //Validazione campi
+      const usrError = registerData.usr.validateCriteria(
+        registerData.usr.value
+      );
+      const pwdError = registerData.pwd.validateCriteria(
+        registerData.pwd.value
+      );
+
+      if (usrError || pwdError) {
+        // Mostra messaggi di errore e blocca la registrazione
+        if (usrError) toast.error(usrError);
+        if (pwdError) toast.error(pwdError);
+        return; // Interrompe l'esecuzione
+      }
 
       const authRequest: AuthRequest = {
         usr: registerData.usr.value,
@@ -48,7 +64,7 @@ export default function Register() {
           console.error("Errore nella registrazione: ", error);
         });
     },
-    [navigate, registerData.pwd.value, registerData.usr.value]
+    [navigate, registerData.pwd, registerData.usr]
   );
 
   return (

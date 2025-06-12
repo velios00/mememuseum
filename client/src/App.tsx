@@ -9,6 +9,7 @@ import { UserContext } from "./shared/context/UserContext";
 import { logOut } from "./shared/utils/auth.utils";
 import { logOutInterceptor } from "./axios/Interceptors";
 import { JWTPayload } from "./shared/models/JWTPayload.model";
+import { getUserData } from "./services/UserService";
 
 function App() {
   const location = useLocation();
@@ -29,12 +30,9 @@ function App() {
       if (decodedToken.exp && decodedToken.exp < currentTime) {
         logOut(navigate);
       } else {
-        const user: User = {
-          id: decodedToken.user.id,
-          userName: decodedToken.user.userName,
-          profileImage: decodedToken.user.profileImage,
-        };
-        setUserData(user);
+        getUserData(decodedToken.user.id).then(({ data: user }) => {
+          setUserData(user);
+        });
       }
     }
   }, []);

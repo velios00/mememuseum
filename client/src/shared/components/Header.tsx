@@ -47,7 +47,7 @@ export default function Header() {
   }, [navigate, userContext]);
 
   useEffect(() => {
-    //console.log"User data context updated yeah:", userContext);
+    console.log("User data context updated yeah:", userContext);
   }, [userContext]);
 
   return (

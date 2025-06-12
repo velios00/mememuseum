@@ -8,7 +8,7 @@ import TagSearchBar from "../shared/components/TagSearchBar";
 
 export default function Homepage() {
   const [memes, setMemes] = useState<Meme[]>([]);
-  const [filter, setFilter] = useState<string>("top");
+  const [filter, setFilter] = useState<string>("new");
   const [page, setPage] = useState(1);
   const [tags, setTags] = useState<string[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -62,7 +62,7 @@ export default function Homepage() {
           ))}
         </Box>
 
-        {(page > 1 || hasMore) && (
+        {(page > 1 || (hasMore && memes.length >= 10)) && (
           <Box
             display={"flex"}
             flexDirection="row"
@@ -79,7 +79,7 @@ export default function Homepage() {
               </Button>
             )}
 
-            {hasMore && (
+            {hasMore && memes.length >= 10 && (
               <Button
                 variant="outlined"
                 onClick={() => setPage((prev) => prev + 1)}

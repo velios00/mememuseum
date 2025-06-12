@@ -44,15 +44,15 @@ export class MemeController {
         return Meme.findByPk(memeId);
     }
 
-    static async deleteMeme(memeId) {
-        //console.log"memeid: ", memeId);
-        const meme = await Meme.findByPk(memeId);
-        if(!meme)
-            throw new Error("Meme not found");
-        const imagePath = meme.image;
-        await Meme.destroy({ where: { id: memeId } });
-        return meme;
-    }
+    // static async deleteMeme(memeId) {
+    //     //console.log"memeid: ", memeId);
+    //     const meme = await Meme.findByPk(memeId);
+    //     if(!meme)
+    //         throw new Error("Meme not found");
+    //     const imagePath = meme.image;
+    //     await Meme.destroy({ where: { id: memeId } });
+    //     return meme;
+    // }
 
     static async getFilteredMemes(query) {
     const filter = query.filter || "new";
@@ -98,9 +98,9 @@ export class MemeController {
                 model: Tag,
                 attributes: ["tagName"],
                 through: { attributes: [] },
-                where: tagList.length > 0
-                    ? { tagName: { [Sequelize.Op.in]: tagList } }
-                    : undefined,
+                // where: tagList.length > 0
+                //     ? { tagName: { [Sequelize.Op.in]: tagList } }
+                //     : undefined,
                 required: tagList.length > 0,
             },
             {
@@ -160,85 +160,261 @@ export class MemeController {
     }));
 }
 
-    static async getMemeOfTheDay() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+//     static async getMemeOfTheDay() {
+//         const now = new Date();
+//         now.setHours(0, 0, 0, 0);
+//         const today = now;
 
-        //esiste gia' un dailymeme per oggi ?
-        let dailyEntry = await DailyMeme.findOne({ where: { date: today}, include: Meme});
+//     // Verifica se il meme del giorno è già stato selezionato
+//         let dailyEntry = await DailyMeme.findOne({
+//             where: { date: today },
+//         });
 
-        //altrimenti
-        if(!dailyEntry) {
-            const memes = await Meme.findAll({
-                include: [{ model: Tag }],
-            });
+//         if (!dailyEntry) {
+//             const memes = await Meme.findAll({
+//                 order: [['createdAt', 'ASC']],
+//             });
 
-            if(memes.length === 0){
-                throw new Error("No memes available");
-            }
+//             if (memes.length === 0) {
+//                 throw new Error("No memes available");
+//             }
 
-            const randomIndex = Math.floor(Math.random() * memes.length);
-            const selectedMeme = memes[randomIndex];
+//             // Calcola un indice basato sul numero di giorni dall'epoca Unix
+//             const msInADay = 1000 * 60 * 60 * 24; // 24 ore
+//             const dayIndex = Math.floor(Date.now() / msInADay);
+//             const index = dayIndex % memes.length;
 
-            dailyEntry = await DailyMeme.create({
-                date: today,
-                memeId: selectedMeme.id,
-            });
+//             const selectedMeme = memes[index];
 
-            dailyEntry = await DailyMeme.findOne({ where: { date: today }, include: Meme});
+//             // Salva la scelta nel database per mantenerla fissa per oggi
+//             dailyEntry = await DailyMeme.create({
+//                 date: today,
+//                 memeId: selectedMeme.id,
+//             });
+//         }
+
+//         // Recupera i dettagli del meme selezionato
+//         const meme = await Meme.findByPk(dailyEntry.memeId, {
+//             include: [
+//                 { model: Tag },
+//                 {
+//                     model: User,
+//                     attributes: ["id", "userName", "profileImage"],
+//                 },
+//                 {
+//                     model: Comment,
+//                     include: {
+//                         model: User,
+//                         attributes: ["userName", "profileImage"],
+//                     },
+//                 },
+//                 {
+//                     model: Vote,
+//                     attributes: ["id", "value", "userId", "createdAt"]
+//                 }
+//             ],
+//         });
+
+//         if (!meme) {
+//             throw new Error("Meme not found");
+//         }
+
+//     return {
+//         id: meme.id,
+//         title: meme.title,
+//         image: meme.image,
+//         tags: meme.Tags.map(tag => tag.tagName),
+//         User: {
+//             id: meme.User.id,
+//             userName: meme.User.userName,
+//             profileImage: meme.User.profileImage,
+//         },
+//         comments: meme.Comments?.map((comment) => ({
+//             id: comment.id,
+//             content: comment.content,
+//             userId: comment.userId,
+//             createdAt: comment.createdAt,
+//             User: {
+//                 userName: comment.User?.userName,
+//                 profileImage: comment.User?.profileImage,
+//             },
+//         })) || [],
+//         votes: meme.Votes?.map((vote) => ({
+//             id: vote.id,
+//             value: vote.value,
+//             userId: vote.userId,
+//             createdAt: vote.createdAt,
+//         })) || [],
+//     };
+// }
+
+
+//  static async getMemeOfTheDay() {
+//     // TEST: Simula che ogni minuto è un "giorno"
+//     const msInADay = 1000 * 60; // 1 minuto = 1 giorno
+//     const dayIndex = Math.floor(Date.now() / msInADay);
+//     const today = new Date(dayIndex * msInADay); // Simula data fittizia
+
+//     let dailyEntry = await DailyMeme.findOne({
+//         where: { date: today },
+//     });
+
+//     if (!dailyEntry) {
+//         const memes = await Meme.findAll({
+//             order: [['createdAt', 'ASC']],
+//         });
+
+//         if (memes.length === 0) {
+//             throw new Error("No memes available");
+//         }
+
+//         const index = dayIndex % memes.length;
+//         const selectedMeme = memes[index];
+
+//         dailyEntry = await DailyMeme.create({
+//             date: today,
+//             memeId: selectedMeme.id,
+//         });
+//     }
+
+
+//     // Recupera il meme associato alla entry di oggi
+//     const meme = await Meme.findByPk(dailyEntry.memeId, {
+//         include: [
+//             { model: Tag },
+//             {
+//                 model: User,
+//                 attributes: ["id", "userName", "profileImage"],
+//             },
+//             {
+//                 model: Comment,
+//                 include: {
+//                     model: User,
+//                     attributes: ["userName", "profileImage"],
+//                 },
+//             },
+//             {
+//                 model: Vote,
+//                 attributes: ["id", "value", "userId", "createdAt"]
+//             }
+//         ],
+//     });
+
+//     if (!meme) {
+//         throw new Error("Meme not found");
+//     }
+
+//     return {
+//         id: meme.id,
+//         title: meme.title,
+//         image: meme.image,
+//         tags: meme.Tags.map(tag => tag.tagName),
+//         User: {
+//             id: meme.User.id,
+//             userName: meme.User.userName,
+//             profileImage: meme.User.profileImage,
+//         },
+//         comments: meme.Comments?.map((comment) => ({
+//             id: comment.id,
+//             content: comment.content,
+//             userId: comment.userId,
+//             createdAt: comment.createdAt,
+//             User: {
+//                 userName: comment.User?.userName,
+//                 profileImage: comment.User?.profileImage,
+//             },
+//         })) || [],
+//         votes: meme.Votes?.map((vote) => ({
+//             id: vote.id,
+//             value: vote.value,
+//             userId: vote.userId,
+//             createdAt: vote.createdAt,
+//         })) || [],
+//     };
+// }
+
+
+ static async getMemeOfTheDay() {
+    // TEST: Se si vuole testare al minuto, msInADay deve avere 1000*60
+    const msInADay = 1000 * 60 * 60 * 24; 
+    const dayIndex = Math.floor(Date.now() / msInADay);
+    const today = new Date(dayIndex * msInADay); // Simula data fittizia
+
+    let dailyEntry = await DailyMeme.findOne({
+        where: { date: today },
+    });
+
+    if (!dailyEntry) {
+        const memes = await Meme.findAll({
+            order: [['createdAt', 'ASC']],
+        });
+
+        if (memes.length === 0) {
+            throw new Error("No memes available");
         }
-            const meme = await Meme.findByPk(dailyEntry.memeId, {
-                include: [{ model: Tag },
-                    {
-                        model: User,
-                        attributes: ["id", "userName", "profileImage"],
-                    },
-                    {
-                        model: Comment,
-                        include: {
-                            model: User,
-                            attributes: ["userName", "profileImage"],
-                        },
-                    },
-                    {
-                        model: Vote,
-                        attributes: ["id", "value", "userId", "createdAt"]
-                    }
-                ],
-                
-            });
-            
-            return {
-                id: meme.id,
-                title: meme.title,
-                image: meme.image,
-                tags: meme.Tags.map(tag => tag.tagName),
-                User: {
-                    id: meme.User.id,
-                    userName: meme.User.userName,
-                    profileImage: meme.User.profileImage,
-                },
-                comments:
-            meme.Comments?.map((comment) => ({
-                id: comment.id,
-                content: comment.content,
-                userId: comment.userId,
-                createdAt: comment.createdAt,
-                User: {
-                    userName: comment.User?.userName,
-                    profileImage: comment.User?.profileImage,
-                },
-            })) || [],
-            votes:
-                meme.Votes?.map((vote) => ({
-                id: vote.id,
-                value: vote.value,
-                userId: vote.userId,
-                createdAt: vote.createdAt,
-            })) || [],
-                
-                
-            }
-        
+
+        const index = dayIndex % memes.length;
+        const selectedMeme = memes[index];
+
+        dailyEntry = await DailyMeme.create({
+            date: today,
+            memeId: selectedMeme.id,
+        });
     }
+
+
+    // Recupera il meme associato alla entry di oggi
+    const meme = await Meme.findByPk(dailyEntry.memeId, {
+        include: [
+            { model: Tag },
+            {
+                model: User,
+                attributes: ["id", "userName", "profileImage"],
+            },
+            {
+                model: Comment,
+                include: {
+                    model: User,
+                    attributes: ["userName", "profileImage"],
+                },
+            },
+            {
+                model: Vote,
+                attributes: ["id", "value", "userId", "createdAt"]
+            }
+        ],
+    });
+
+    if (!meme) {
+        throw new Error("Meme not found");
+    }
+
+    return {
+        id: meme.id,
+        title: meme.title,
+        image: meme.image,
+        tags: meme.Tags.map(tag => tag.tagName),
+        User: {
+            id: meme.User.id,
+            userName: meme.User.userName,
+            profileImage: meme.User.profileImage,
+        },
+        comments: meme.Comments?.map((comment) => ({
+            id: comment.id,
+            content: comment.content,
+            userId: comment.userId,
+            createdAt: comment.createdAt,
+            User: {
+                userName: comment.User?.userName,
+                profileImage: comment.User?.profileImage,
+            },
+        })) || [],
+        votes: meme.Votes?.map((vote) => ({
+            id: vote.id,
+            value: vote.value,
+            userId: vote.userId,
+            createdAt: vote.createdAt,
+        })) || [],
+    };
+}
 }

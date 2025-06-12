@@ -38,6 +38,17 @@ export default function Login() {
     (event: FormEvent) => {
       event.preventDefault();
 
+      // Validazione dei campi
+      const usrError = loginData.usr.validateCriteria(loginData.usr.value);
+      const pwdError = loginData.pwd.validateCriteria(loginData.pwd.value);
+
+      if (usrError || pwdError) {
+        // Mostra messaggi di errore e blocca il login
+        if (usrError) toast.error(usrError);
+        if (pwdError) toast.error(pwdError);
+        return; // Interrompe l'esecuzione
+      }
+
       const authRequest: AuthRequest = {
         usr: loginData.usr.value,
         pwd: loginData.pwd.value,
@@ -50,9 +61,11 @@ export default function Login() {
           const user: User = {
             id: decodedToken.user.id,
             userName: decodedToken.user.userName,
+            profileImage: decodedToken.user.profileImage,
           };
           userContext?.setUser(user);
           window.dispatchEvent(new Event("storage"));
+          toast.success("Login riuscito!");
         })
         .catch((error) => {
           toast.error("Login Fallito. Usa credenziali diverse");

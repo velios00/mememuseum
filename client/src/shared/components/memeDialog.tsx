@@ -16,6 +16,7 @@ import Votes from "./Votes";
 import CloseIcon from "@mui/icons-material/Close";
 import { addComment } from "../../services/CommentService";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
   const { open, meme, onClose, onNewComment } = props.dialogProps;
@@ -29,6 +30,16 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
   const userContext = useContext(UserContext);
 
   const handleAddComment = useCallback(() => {
+    if (!userContext || !userContext.user) {
+      toast.error("Devi essere loggato per commentare");
+      return;
+    }
+
+    if (comment.trim() === "") {
+      toast.error("Il commento non può essere vuoto");
+      return;
+    }
+
     if (userContext && userContext.user && comment.trim() !== "") {
       const newComment: Comment = {
         content: comment.trim(),

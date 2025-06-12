@@ -8,18 +8,6 @@ const upload = multer({ dest: 'uploads/' });
 
 export const memeRouter = express.Router();
 
-memeRouter.post('/upload', upload.single('image'), (req, res, next) => {
-    //console.log("Request body: ", req);
-    const body = JSON.parse(JSON.stringify(req.body));
-    //console.log("Parsed body: ", body);
-    MemeController.createMeme(body, req.file)
-        .then((meme) => {
-            res.status(201).json(meme);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
 
 memeRouter.get('/memes/:id', (req, res, next) => {
     MemeController.findById(req.params.id)
@@ -55,6 +43,19 @@ memeRouter.get(`/meme-of-the-day`, (req, res, next) => {
     MemeController.getMemeOfTheDay()
         .then((item) => {
             res.json(item);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+memeRouter.post('/upload', enforceAuthentication, upload.single('image'), (req, res, next) => {
+    //console.log("Request body: ", req);
+    const body = JSON.parse(JSON.stringify(req.body));
+    //console.log("Parsed body: ", body);
+    MemeController.createMeme(body, req.file)
+        .then((meme) => {
+            res.status(201).json(meme);
         })
         .catch((err) => {
             next(err);

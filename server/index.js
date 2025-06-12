@@ -27,7 +27,7 @@ app.use('/uploads', (req, res, next) => {
 // app.use('/memes', express.static(path.join(__dirname, 'uploads/memes')));
 
 app.use(authenticationRouter);
-app.use(enforceAuthentication);
+
 app.use(memeRouter);
 app.use(userRouter);
 app.use(voteRouter);

@@ -1,21 +1,27 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import ThumbsUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbsUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbsDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import { IconButton, keyframes, Typography } from "@mui/material";
 import { deleteVote, saveVote, updateVote } from "../../services/VoteService";
+import { UserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
 export default function Votes(props: { memeId: number; votes: any[] }) {
   const [vote, setVote] = useState<1 | -1 | 0>(0);
   const [voteCount, setVoteCount] = useState(0);
   const [voteId, setVoteId] = useState<number | null>(null); // serve per put e delete
 
-  const userId = localStorage.getItem("userId");
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
-    if (!props.votes) return;
-    const userVote = props.votes.find((v) => v.userId.toString() === userId);
+    if (!userContext) {
+      setVote(0);
+      setVoteId(null);
+      return;
+    }
+    const userVote = props.votes.find((v) => v.userId === userContext.user?.id);
     const total = props.votes.reduce((sum, v) => sum + v.value, 0);
 
     if (userVote) {
@@ -23,7 +29,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
       setVoteId(userVote.id);
     }
     setVoteCount(total);
-  }, [props.votes, userId]);
+  }, [props.votes, userContext]);
 
   const pulse = keyframes`
   0% { transform: scale(1); }
@@ -33,6 +39,10 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
 
   const handleVote = useCallback(
     async (newValue: 1 | -1) => {
+      if (!userContext) {
+        toast.error("Per votare devi essere loggato");
+        return;
+      }
       try {
         if (vote === newValue) {
           await deleteVote(props.memeId, voteId!);
@@ -40,12 +50,16 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
           setVoteCount((prev) => prev - newValue);
           setVoteId(null);
         } else if (vote === 0) {
-          const res = await saveVote(props.memeId, userId!, newValue);
+          const res = await saveVote(
+            props.memeId,
+            userContext.user.id!,
+            newValue
+          );
           setVote(newValue);
           setVoteCount((prev) => prev + newValue);
           setVoteId(res.data.id);
         } else {
-          await updateVote(voteId!, userId!, newValue);
+          await updateVote(voteId!, userContext.user.id!, newValue);
           setVoteCount((prev) => prev + newValue - vote);
           setVote(newValue);
         }
@@ -53,7 +67,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
         console.error("Errore nel voto", error);
       }
     },
-    [vote, voteId, userId, props.memeId]
+    [userContext, vote, props.memeId, voteId]
   );
 
   return (

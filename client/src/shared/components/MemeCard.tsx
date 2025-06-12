@@ -14,7 +14,8 @@ import { Meme } from "../models/Meme.model";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import MemeDialog from "./memeDialog";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   if (!props.meme) return null;
@@ -25,6 +26,8 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
     Array.isArray(props.meme?.comments) ? props.meme.comments.length : 0
   );
 
+  const userContext = useContext(UserContext);
+
   const handleOpenModal = useCallback(() => {
     setOpen(true);
   }, []);
@@ -32,6 +35,11 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
   const handleCloseModal = useCallback(() => {
     setOpen(false);
   }, []);
+
+  const isAuthor = userContext?.user?.id === props.meme.User.id;
+  const avatarSrc = isAuthor
+    ? `http://localhost:3000/${userContext.user?.profileImage || ""}`
+    : `http://localhost:3000/${props.meme.User?.profileImage || ""}`;
 
   return (
     <Card
@@ -58,7 +66,7 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
         onClick={() => navigate(`/profile/${props.meme.User?.id}`)}
       >
         <Avatar
-          src={`http://localhost:3000/${props.meme.User?.profileImage || ""}`}
+          src={avatarSrc}
           alt={props.meme.User?.userName}
           sx={{ width: 40, height: 40, mr: 1 }}
         />
@@ -97,9 +105,9 @@ export default function MemeCard(props: { meme: Meme; memeIndex: number }) {
             fontWeight: "bold",
             textAlign: "center",
             fontSize: { xs: "1.1rem", sm: "1.25rem" },
-            wordBreak: "break-word", // Permette di andare a capo sulle parole lunghe
-            overflowWrap: "break-word", // Alternativa più compatibile
-            whiteSpace: "normal", // Garantisce che il testo possa andare a capo
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+            whiteSpace: "normal",
           }}
         >
           {props.meme.title}
