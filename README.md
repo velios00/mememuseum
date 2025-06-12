@@ -24,3 +24,34 @@ La visualizzazione dei meme e' aperta anche a chi non registrato, con l'eccezion
 ```bash
 git clone https://github.com/velios00/mememuseum
 cd mememuseum
+```
+### 2. Installa le dipendenze
+Vai alla directory del backend e installa
+```bash
+cd server
+npm install
+```
+Vai alla directory del frontend e installa
+```bash
+cd client
+npm install
+```
+### 3. Configurazione .env
+Il file .env e' essenziale perche' contiene tutte le variabili d'ambiente necessarie per configurare il backend.
+Nella directory "server" creare un file ".env" e inserire il seguente template:
+```bash
+DB_CONNECTION_URI = "mememuseumDB.db"
+DIALECT = "sqlite"
+TOKEN_SECRET = "M3meMuseumS3cret"
+```
+### 3. Esecuzione dell'applicazione
+Dalla directory "server":
+```bash
+npm start
+```
+Il server sara' attivo all'indirizzo: `http://localhost:3000`
+Dalla directory "client":
+```bash
+npm start
+```
+Il client sara' attivo all'indirizzo: `http://localhost:5173/`
