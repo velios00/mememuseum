@@ -19,12 +19,9 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // oppure "http://localhost:5173"
+  res.header("Access-Control-Allow-Origin", "*");
   next();
 }, express.static('uploads'));
-
-// app.use('/avatars', express.static(path.join(__dirname, 'uploads/avatars')));
-// app.use('/memes', express.static(path.join(__dirname, 'uploads/memes')));
 
 app.use(authenticationRouter);
 
