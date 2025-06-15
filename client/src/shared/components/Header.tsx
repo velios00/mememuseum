@@ -13,7 +13,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LoginIcon from "@mui/icons-material/Login";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 
 export default function Header() {
@@ -46,9 +46,9 @@ export default function Header() {
     navigate("/");
   }, [navigate, userContext]);
 
-  // useEffect(() => {
-  //   //console.log("User data context updated:", userContext);
-  // }, [userContext]);
+  useEffect(() => {
+    console.log("User data context updated:", userContext);
+  }, [userContext]);
 
   return (
     <AppBar

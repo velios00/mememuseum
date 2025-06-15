@@ -46,6 +46,7 @@ export default function FloatingHintButton() {
         </Paper>
       </Fade>
 
+      {/* Bottone con immagine */}
       <Fab
         onClick={handleClick}
         sx={{
@@ -59,7 +60,7 @@ export default function FloatingHintButton() {
         }}
       >
         <img
-          src="../src/assets/doge.png"
+          src="../src/assets/doge.png" // <-- Cambia con il path della tua immagine
           alt="doge"
           style={{ width: 140, height: 140, objectFit: "cover" }}
         />
