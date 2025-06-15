@@ -2,8 +2,6 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
   CircularProgress,
   Divider,
   Fade,
@@ -11,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "../../models/User.model";
-import { useParams } from "react-router-dom";
 import {
   ChangeEvent,
   useCallback,
@@ -83,12 +80,7 @@ export default function Profile(props: { userData: User }) {
 
     try {
       const response = await saveAvatar(userContext.user.id, selectedFile);
-      //aggiorna lo user nel context con nuova immagine
       if (userContext.user) {
-        const updatedUser = {
-          ...userContext.user,
-          profileImage: response.data.profileImage,
-        };
         userContext.setUser(response.data);
       }
       setShowConfirm(false);

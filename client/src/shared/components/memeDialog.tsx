@@ -12,7 +12,6 @@ import { MemeDialogProps } from "../models/MemeDialogProps.model";
 import { useCallback, useContext, useState } from "react";
 import { Comment } from "../models/Comment.model";
 import { UserContext } from "../context/UserContext";
-import Votes from "./Votes";
 import CloseIcon from "@mui/icons-material/Close";
 import { addComment } from "../../services/CommentService";
 import { useNavigate } from "react-router-dom";
@@ -41,17 +40,12 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
     }
 
     if (userContext && userContext.user && comment.trim() !== "") {
-      const newComment: Comment = {
-        content: comment.trim(),
-        User: userContext.user,
-      };
       addComment(meme?.id, userContext.user.id, comment.trim())
         .then((response) => {
           setComments((prevComments) => [...prevComments, response.data]);
           setComment("");
 
           if (onNewComment) {
-            //console.log"Ci passo");
             onNewComment();
           }
         })

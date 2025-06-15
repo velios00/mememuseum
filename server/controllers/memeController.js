@@ -22,7 +22,6 @@ export class MemeController {
         let meme = Meme.build({
             title: body.title,
             image: imagePath,
-            //tag: body.tag ? body.tag.split(',') : [],
             userId: body.userId,
         });
         //2/ Salva meme
@@ -88,9 +87,6 @@ export class MemeController {
                 model: Tag,
                 attributes: ["tagName"],
                 through: { attributes: [] },
-                // where: tagList.length > 0
-                //     ? { tagName: { [Sequelize.Op.in]: tagList } }
-                //     : undefined,
                 required: tagList.length > 0,
             },
             {
@@ -152,7 +148,6 @@ export class MemeController {
 
 
 static async getMemeOfTheDay() {
-    // 1 giorno in millisecondi (cambia a 1000 * 60 per test minuto)
     const msInADay = 1000 * 60 * 60 * 24;
     const dayIndex = Math.floor(Date.now() / msInADay);
     const today = new Date(dayIndex * msInADay);
@@ -167,7 +162,9 @@ static async getMemeOfTheDay() {
       });
 
       if (memes.length === 0) {
-        throw new Error("No memes available");
+        const err = new Error("Nessun meme disponibile")
+        err.status = 404
+        throw err;
       }
 
       // Generatore pseudo-random stabile basato su dayIndex

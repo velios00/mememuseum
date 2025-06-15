@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import { User } from "../shared/models/User.model";
@@ -14,21 +14,27 @@ export default function Profilepage() {
     const userIdNumber = parseInt(userId);
 
     getUserData(userIdNumber).then((response) => {
-      console.log("getUserData response", response.data);
       setUserDataProfile(response.data);
     });
   }, [userId]);
 
   useEffect(fetchUserData, [fetchUserData]);
 
-  console.log("userDataProfilee", userDataProfile);
-
   return (
     <>
       {userDataProfile ? (
         <Profile userData={userDataProfile} />
       ) : (
-        <CircularProgress />
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="50vh"
+        >
+          <Typography variant="h4" sx={{ color: "white" }}>
+            Utente non trovato.
+          </Typography>
+        </Box>
       )}
     </>
   );

@@ -72,7 +72,7 @@ export default function Login() {
           console.error("Login error: ", error);
         });
     },
-    [loginData.pwd.value, loginData.usr.value, userContext]
+    [loginData.pwd, loginData.usr, userContext]
   );
 
   return (

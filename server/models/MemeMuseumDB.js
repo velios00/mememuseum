@@ -85,8 +85,8 @@ Meme.Comments = Meme.hasMany(Comment, {
 database
   .sync()
   .then(() => {
-    //console.log"Database sincronizzato");
+    console.log("Database sincronizzato");
   })
   .catch((err) => {
-    //console.log"Errore nella sincronizzazione: " + err.message);
+    console.log("Errore nella sincronizzazione: " + err.message);
   });
