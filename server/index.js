@@ -8,7 +8,7 @@ import { memeRouter } from './routes/memeRouter.js';
 import { userRouter } from './routes/userRouter.js';
 import { voteRouter } from './routes/voteRouter.js';
 import { commentRouter } from './routes/commentRouter.js';
-import { enforceAuthentication } from './middleware/authorization.js';
+
 
 
 
@@ -36,7 +36,6 @@ app.use("/memes", commentRouter);
 
 
 app.use((err, req, res, next) => {
-    //console.logerr.stack); //se non è presente stack, stamperà undefined
     res.status(err.status || 500).json({
       code: err.status || 500,
       description: err.message || "An error occurred",

@@ -8,7 +8,7 @@ import { deleteVote, saveVote, updateVote } from "../../services/VoteService";
 import { UserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
 
-export default function Votes(props: { memeId: number; votes: any[] }) {
+export default function Votes(props: { memeId: number; votes: any[]}) {
   const [vote, setVote] = useState<1 | -1 | 0>(0);
   const [voteCount, setVoteCount] = useState(0);
   const [voteId, setVoteId] = useState<number | null>(null); // serve per put e delete
@@ -16,7 +16,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
   const userContext = useContext(UserContext);
 
   useEffect(() => {
-    if (!userContext) {
+    if (!userContext?.user) {
       setVote(0);
       setVoteId(null);
       return;
@@ -39,7 +39,7 @@ export default function Votes(props: { memeId: number; votes: any[] }) {
 
   const handleVote = useCallback(
     async (newValue: 1 | -1) => {
-      if (!userContext) {
+      if (!userContext?.user) {
         toast.error("Per votare devi essere loggato");
         return;
       }

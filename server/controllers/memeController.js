@@ -334,87 +334,95 @@ export class MemeController {
 // }
 
 
- static async getMemeOfTheDay() {
-    // TEST: Se si vuole testare al minuto, msInADay deve avere 1000*60
-    const msInADay = 1000 * 60 * 60 * 24; 
+
+static async getMemeOfTheDay() {
+    // 1 giorno in millisecondi (cambia a 1000 * 60 per test minuto)
+    const msInADay = 1000 * 60 * 60 * 24;
     const dayIndex = Math.floor(Date.now() / msInADay);
-    const today = new Date(dayIndex * msInADay); // Simula data fittizia
+    const today = new Date(dayIndex * msInADay);
 
     let dailyEntry = await DailyMeme.findOne({
-        where: { date: today },
+      where: { date: today },
     });
 
     if (!dailyEntry) {
-        const memes = await Meme.findAll({
-            order: [['createdAt', 'ASC']],
-        });
+      const memes = await Meme.findAll({
+        order: [["createdAt", "ASC"]], // Ordine stabile (opzionale qui)
+      });
 
-        if (memes.length === 0) {
-            throw new Error("No memes available");
-        }
+      if (memes.length === 0) {
+        throw new Error("No memes available");
+      }
 
-        const index = dayIndex % memes.length;
-        const selectedMeme = memes[index];
+      // Generatore pseudo-random stabile basato su dayIndex
+      function seededRandom(seed) {
+        const x = Math.sin(seed) * 10000;
+        return x - Math.floor(x);
+      }
 
-        dailyEntry = await DailyMeme.create({
-            date: today,
-            memeId: selectedMeme.id,
-        });
+      const randomIndex = Math.floor(seededRandom(dayIndex) * memes.length);
+      const selectedMeme = memes[randomIndex];
+
+      dailyEntry = await DailyMeme.create({
+        date: today,
+        memeId: selectedMeme.id,
+      });
     }
-
 
     // Recupera il meme associato alla entry di oggi
     const meme = await Meme.findByPk(dailyEntry.memeId, {
-        include: [
-            { model: Tag },
-            {
-                model: User,
-                attributes: ["id", "userName", "profileImage"],
-            },
-            {
-                model: Comment,
-                include: {
-                    model: User,
-                    attributes: ["userName", "profileImage"],
-                },
-            },
-            {
-                model: Vote,
-                attributes: ["id", "value", "userId", "createdAt"]
-            }
-        ],
+      include: [
+        { model: Tag },
+        {
+          model: User,
+          attributes: ["id", "userName", "profileImage"],
+        },
+        {
+          model: Comment,
+          include: {
+            model: User,
+            attributes: ["userName", "profileImage"],
+          },
+        },
+        {
+          model: Vote,
+          attributes: ["id", "value", "userId", "createdAt"],
+        },
+      ],
     });
 
     if (!meme) {
-        throw new Error("Meme not found");
+      throw new Error("Meme not found");
     }
 
     return {
-        id: meme.id,
-        title: meme.title,
-        image: meme.image,
-        tags: meme.Tags.map(tag => tag.tagName),
-        User: {
-            id: meme.User.id,
-            userName: meme.User.userName,
-            profileImage: meme.User.profileImage,
-        },
-        comments: meme.Comments?.map((comment) => ({
-            id: comment.id,
-            content: comment.content,
-            userId: comment.userId,
-            createdAt: comment.createdAt,
-            User: {
-                userName: comment.User?.userName,
-                profileImage: comment.User?.profileImage,
-            },
+      id: meme.id,
+      title: meme.title,
+      image: meme.image,
+      tags: meme.Tags.map((tag) => tag.tagName),
+      User: {
+        id: meme.User.id,
+        userName: meme.User.userName,
+        profileImage: meme.User.profileImage,
+      },
+      comments:
+        meme.Comments?.map((comment) => ({
+          id: comment.id,
+          content: comment.content,
+          userId: comment.userId,
+          createdAt: comment.createdAt,
+          User: {
+            userName: comment.User?.userName,
+            profileImage: comment.User?.profileImage,
+          },
         })) || [],
-        votes: meme.Votes?.map((vote) => ({
-            id: vote.id,
-            value: vote.value,
-            userId: vote.userId,
-            createdAt: vote.createdAt,
+      votes:
+        meme.Votes?.map((vote) => ({
+          id: vote.id,
+          value: vote.value,
+          userId: vote.userId,
+          createdAt: vote.createdAt,
         })) || [],
     };
-}
+  }
 }
