@@ -12,7 +12,6 @@ import { MemeDialogProps } from "../models/MemeDialogProps.model";
 import { useCallback, useContext, useState } from "react";
 import { Comment } from "../models/Comment.model";
 import { UserContext } from "../context/UserContext";
-import Votes from "./Votes";
 import CloseIcon from "@mui/icons-material/Close";
 import { addComment } from "../../services/CommentService";
 import { useNavigate } from "react-router-dom";

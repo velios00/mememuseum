@@ -16,7 +16,6 @@ authenticationRouter.post('/register', (req, res, next) => {
 authenticationRouter.post('/login', (req, res, next) => {
     AuthenticationController.login(req.body)
         .then((userFound) => {
-            //console.log"User found: ", userFound);
             if(userFound){
                 res.json(AuthenticationController.issueToken(userFound));
             }

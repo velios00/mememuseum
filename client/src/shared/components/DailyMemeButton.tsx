@@ -60,7 +60,7 @@ export default function FloatingHintButton() {
         }}
       >
         <img
-          src="../src/assets/doge.png" // <-- Cambia con il path della tua immagine
+          src="../src/assets/doge.png"
           alt="doge"
           style={{ width: 140, height: 140, objectFit: "cover" }}
         />

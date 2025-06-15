@@ -50,9 +50,7 @@ memeRouter.get(`/meme-of-the-day`, (req, res, next) => {
 });
 
 memeRouter.post('/upload', enforceAuthentication, upload.single('image'), (req, res, next) => {
-    //console.log("Request body: ", req);
     const body = JSON.parse(JSON.stringify(req.body));
-    //console.log("Parsed body: ", body);
     MemeController.createMeme(body, req.file)
         .then((meme) => {
             res.status(201).json(meme);

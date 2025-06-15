@@ -20,7 +20,16 @@ export default function MemeOfTheDay() {
       </Typography>
 
       {!meme ? (
-        <CircularProgress />
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="50vh"
+        >
+          <Typography variant="h4" sx={{ color: "white" }}>
+            Meme del giorno non trovato.
+          </Typography>
+        </Box>
       ) : (
         <MemeCard meme={meme} key={meme.id} memeIndex={0} />
       )}

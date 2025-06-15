@@ -14,7 +14,6 @@ export class CommentController {
                 }
             ]
         });
-        ////console.log"allComments", allComments);
         if (!allComments) {
             throw new Error("No comments found");
         }
@@ -23,7 +22,6 @@ export class CommentController {
 
 
     static async createComment(memeId, body) {
-        ////console.log"userId", body.userId);
         if (!body.userId) {
             throw new Error("User ID is required");
         }
@@ -43,7 +41,6 @@ export class CommentController {
 
     static async deleteComment(commentId) {
         const comment = await Comment.findByPk(commentId);
-        ////console.log"comment", comment);
         if (!comment)
              throw new Error("Comment not found");
         return comment.destroy();
