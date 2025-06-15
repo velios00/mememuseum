@@ -39,7 +39,7 @@ export class VoteController {
     {
         let existingVote = await Vote.findOne({ where: { id: voteId } });
         if (!existingVote) {
-            throw new Error("No vote on this idea yet.");
+            throw new Error("No vote on this meme yet.");
         }
         ////console.log"existingVote", existingVote);
         ////console.log"modifiedVote", modifiedVote);

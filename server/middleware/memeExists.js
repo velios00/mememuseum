@@ -7,5 +7,5 @@ export async function memeExists(req, res, next){
     if(meme)
         next();
     else
-        next(new Error("Idea not found"));
+        next(new Error("Meme not found"));
 }
