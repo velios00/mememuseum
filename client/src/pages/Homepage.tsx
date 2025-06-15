@@ -27,8 +27,6 @@ export default function Homepage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  //console.log"memes", memes);
-
   return (
     <>
       <Box p={3}>

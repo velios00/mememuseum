@@ -1,4 +1,11 @@
-import { Box, Button, FormHelperText, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormHelperText,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -79,7 +86,6 @@ export default function UploadMeme() {
             variant="outlined"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            
             InputLabelProps={{
               style: { color: "white" },
             }}
@@ -92,7 +98,7 @@ export default function UploadMeme() {
             variant="outlined"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
-            helperText= "Separa i tag da virgole"
+            helperText="Separa i tag da virgole"
             InputLabelProps={{
               style: { color: "white" },
             }}
@@ -110,7 +116,7 @@ export default function UploadMeme() {
             accept="image/*"
             onChange={(e) => setImage(e.target.files?.[0] || null)}
           />
-          
+
           <Button variant="contained" color="primary" type="submit">
             Carica
           </Button>

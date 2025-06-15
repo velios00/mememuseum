@@ -41,17 +41,12 @@ export default function MemeDialog(props: { dialogProps: MemeDialogProps }) {
     }
 
     if (userContext && userContext.user && comment.trim() !== "") {
-      const newComment: Comment = {
-        content: comment.trim(),
-        User: userContext.user,
-      };
       addComment(meme?.id, userContext.user.id, comment.trim())
         .then((response) => {
           setComments((prevComments) => [...prevComments, response.data]);
           setComment("");
 
           if (onNewComment) {
-            //console.log"Ci passo");
             onNewComment();
           }
         })

@@ -38,10 +38,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    ////console.log"User data context updated:", userData);
-  }, [userData]);
-
-  useEffect(() => {
     logOutInterceptor(navigate);
   }, [navigate]);
 
