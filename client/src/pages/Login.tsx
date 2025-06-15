@@ -46,7 +46,7 @@ export default function Login() {
         // Mostra messaggi di errore e blocca il login
         if (usrError) toast.error(usrError);
         if (pwdError) toast.error(pwdError);
-        return; // Interrompe l'esecuzione
+        return;
       }
 
       const authRequest: AuthRequest = {
